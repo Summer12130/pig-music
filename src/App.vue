@@ -44,6 +44,8 @@ export default {
         navBarTextColor: "#FFB4A2",
         navBarBackgroundColor: "#FFB4A2",
         tabBarBackgroundColor: "#B5838D",
+        cardBackgroundColor: "var(--van-gray-3)",
+        cardFontSize:".15rem"
       },
     };
   },

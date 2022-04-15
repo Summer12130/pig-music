@@ -20,6 +20,7 @@ import {
   Image as VanImage,
   Toast,
   Loading,
+  Button,
 } from "vant";
 import BScroll from "@/components/common/Scroll/Scroll";
 createApp(App)
@@ -35,6 +36,7 @@ createApp(App)
   .use(Tag)
   .use(Toast)
   .use(Loading)
+  .use(Button)
   .component("BScroll", BScroll)
   .use(store)
   .use(router)
