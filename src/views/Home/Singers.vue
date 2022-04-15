@@ -128,7 +128,24 @@ export default {
       this.onLoad(true);
     },
   },
-  async created() {},
+  async created(flag = false) {
+    let { data } = await singersListAPI({
+      type: this.type,
+      area: this.area,
+      offset: this.offset,
+    });
+    if (data.code === 200) {
+      if (flag) this.singersList = [];
+      data.artists = data.artists.filter(
+        (artist) => !this.singersList.some((singer) => singer.id === artist.id)
+      );
+      this.singersList = this.singersList.concat(data.artists);
+      this.offset++;
+      this.loading = false;
+    } else {
+      this.finished = true;
+    }
+  },
   setup() {
     const singerContainer = ref(null);
     return {

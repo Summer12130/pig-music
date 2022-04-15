@@ -68,6 +68,14 @@ const routes = [
     },
   },
   {
+    path: "/user/detail",
+    name: "UserDetail",
+    component: () => import("@/views/User/UserDetail.vue"),
+    meta: {
+      title: "",
+    },
+  },
+  {
     path: "/search",
     name: "Search",
     component: () => import("@/views/Search/Search.vue"),

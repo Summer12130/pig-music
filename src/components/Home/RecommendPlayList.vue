@@ -53,7 +53,8 @@ export default {
       this.$emit("toAlbumsPage", "/home/playlist");
     },
     playlistClick(id) {
-      this.$router.replace({
+      this.$store.commit("showNavBarLeftIcon", true);
+      this.$router.push({
         path: "/playlist",
         query: {
           id,

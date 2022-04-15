@@ -33,3 +33,8 @@ export { searchSuggestListAPI, hotKeyWordsAPI } from "./Search/search";
 
 // PlaylistDetail
 export { playlistDetailAPI } from "./Detail/playlist";
+
+// User页面接口
+
+// UserProfile
+export { userPlaylistAPI } from "./User/user";

@@ -70,7 +70,9 @@
           ></van-image>
           <div class="creator-name">
             <p class="nickname">{{ playlist.creator.nickname }}</p>
-            <p class="signature">{{ playlist.creator.signature || "暂无简介"}}</p>
+            <p class="signature">
+              {{ playlist.creator.signature || "暂无简介" }}
+            </p>
             <p class="favorite">
               <van-tag
                 color="#7232dd"
@@ -99,8 +101,9 @@
           >
           </van-divider>
           <van-tag
-            type="primary"
+            color="#7232dd"
             size="large"
+            mark
             v-for="expert in playlist.creator.experts"
             :key="expert"
             >{{ expert }}</van-tag

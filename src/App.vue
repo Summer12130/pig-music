@@ -1,9 +1,15 @@
 <template>
   <van-config-provider :theme-vars="themeVars">
     <div id="my-app">
-      <van-nav-bar :title="title" fixed z-index="999" />
+      <van-nav-bar
+        :title="title"
+        fixed
+        z-index="999"
+        :left-arrow="$store.state.showLeftArrow"
+        @click-left="onClickLeft"
+      />
 
-      <router-view v-slot="{ Component }" class="main-content" :path="path">
+      <router-view v-slot="{ Component }" class="main-content" :path="path" @showUserName="showUserName">
         <keep-alive>
           <component :is="Component" />
         </keep-alive>
@@ -45,9 +51,18 @@ export default {
         navBarBackgroundColor: "#FFB4A2",
         tabBarBackgroundColor: "#B5838D",
         cardBackgroundColor: "var(--van-gray-3)",
-        cardFontSize:".15rem"
+        cardFontSize: ".15rem",
       },
     };
+  },
+  methods: {
+    onClickLeft() {
+      this.$router.back();
+      this.$store.commit("showNavBarLeftIcon", false);
+    },
+    showUserName(username){
+      this.title = username
+    }
   },
   watch: {
     $route() {
