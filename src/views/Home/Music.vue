@@ -55,7 +55,12 @@
 </template>
 
 <script>
-import { musicListAPI, musicUrlAPI } from "@/services";
+import {
+  musicListAPI,
+  musicUrlAPI,
+  musicDetailAPI,
+  musicLyricAPI,
+} from "@/services";
 import { Icon, List, PullRefresh, Toast } from "vant";
 import { shuffle } from "@/utils/utils";
 import { mapActions } from "vuex";
@@ -107,11 +112,15 @@ export default {
         "http://m7.music.126.net/20220418154441/d08f57b7680ee939bb90795658b8bd1f/ymusic/0fd6/4f65/43ed/a8772889f38dfcb91c04da915b301617.mp3";
       console.log(music);
       let { data } = await musicUrlAPI({ id: music.id });
+      let { data: detailData } = await musicDetailAPI({ ids: music.id });
+      let { data: lyric } = await musicLyricAPI({ id: music.id });
       if (data.code === 200) {
         music.url = data?.data[0]?.url;
+        music.duration = detailData?.songs[0]?.dt / 1000;
+        music.lyric = lyric?.lrc?.lyric;
         this.selectPlay({ music, musicId: music.id });
-      }else{
-        music.url = ""
+      } else {
+        music.url = "";
         this.selectPlay({ music, musicId: music.id });
       }
     },

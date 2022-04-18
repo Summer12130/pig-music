@@ -7,7 +7,7 @@ export {
   recommendMusicAPI,
   recommendDjProgramAPI,
   recommendPerformanceAPI,
-  recommendBannerAPI
+  recommendBannerAPI,
 } from "./Home/recommend";
 
 // Playlist
@@ -17,7 +17,12 @@ export { playlistTagsAPI } from "./Home/playlists";
 export { singersListAPI } from "./Home/singers";
 
 // Music
-export { musicListAPI, musicUrlAPI } from "./Home/music";
+export {
+  musicListAPI,
+  musicUrlAPI,
+  musicDetailAPI,
+  musicLyricAPI,
+} from "./Home/music";
 
 // DJ
 export { djListAPI, djRecommendListAPI } from "./Home/dj";

@@ -25,9 +25,40 @@
                 <img class="image" :src="music.picUrl" />
               </div>
             </div>
+            <div class="playing-lyric-wrapper">
+              <div class="playing-lyric">{{ playingLyric }}</div>
+            </div>
           </div>
+          <b-scroll
+            class="middle-r"
+            ref="lyricList"
+            :data="currentLyric && currentLyric.lines"
+          >
+            <div class="lyric-wrapper">
+              <div v-if="currentLyric">
+                <p
+                  ref="lyricLine"
+                  class="text"
+                  :class="{ current: currentLineNum === index }"
+                  v-for="(line, index) in currentLyric.lines"
+                >
+                  {{ line.txt }}
+                </p>
+              </div>
+            </div>
+          </b-scroll>
         </div>
         <div class="bottom">
+          <div class="progress-wrapper">
+            <span class="time time-l">{{ format(currentTime) }}</span>
+            <div class="progress-bar-wrapper">
+              <progress-bar
+                :percent="percent"
+                @percentChange="onProgressBarChange"
+              ></progress-bar>
+            </div>
+            <span class="time time-r">{{ format(music.duration) }}</span>
+          </div>
           <div class="operators">
             <div class="icon i-left" @click="changeMode">
               <van-icon name="circle" />
@@ -36,7 +67,11 @@
               <van-icon name="arrow-left" />
             </div>
             <div class="icon i-center">
-              <van-icon :name="playIcon" @click="togglePlaying" />
+              <van-icon
+                :name="playIcon"
+                @click="togglePlaying"
+                :class="playCls"
+              />
             </div>
             <div class="icon i-right">
               <van-icon name="arrow" />
@@ -57,34 +92,68 @@
           <h2 class="name">{{ music.name }}</h2>
           <p class="desc">{{ music?.song?.artists[0]?.name }}</p>
         </div>
-        <!-- <div class="control"></div> -->
         <div class="control">
-          <van-icon :name="miniIcon" class="icon-playlist" @click.stop="togglePlaying"/>
+          <progress-circle :radius="radius" :percent="percent">
+            <van-icon
+              :name="miniIcon"
+              :class="['icon-mini', miniCls]"
+              @click.stop="togglePlaying"
+            />
+          </progress-circle>
+        </div>
+        <div class="control">
+          <van-icon name="music" class="icon-playlist"></van-icon>
         </div>
       </div>
     </transition>
-    <audio ref="audio" :src="music.url"></audio>
+    <audio ref="audio" :src="music.url" @timeupdate="updateTime"></audio>
   </div>
 </template>
 
 <script>
 import { mapGetters, mapMutations } from "vuex";
 import animations from "create-keyframe-animation";
+import Lyric from "lyric-parser";
 import { prefixStyle } from "@/utils/dom";
-
+import ProgressBar from "@/components/Player/ProgressBar";
+import ProgressCircle from "@/components/Player/ProgressCircle";
+import BScroll from "@/components/common/Scroll/Scroll";
 const transform = prefixStyle("transform");
 
 export default {
   name: "Player",
+  components: {
+    ProgressBar,
+    ProgressCircle,
+    BScroll,
+  },
+  data() {
+    return {
+      currentTime: 0,
+      radius: 32,
+      currentLyric: null,
+      playingLyric: "",
+      currentLineNum: 0,
+    };
+  },
   computed: {
     playIcon() {
-      return this.playing ? "play-circle-o" : "pause-circle-o";
+      return this.playing ? "pause-circle-o" : "play-circle-o";
+    },
+    playCls() {
+      return this.playing ? "icon-pause" : "icon-play";
     },
     miniIcon() {
-      return this.playing ? "play-circle-o" : "pause-circle-o";
+      return this.playing ? "pause-circle-o" : "play-circle-o";
+    },
+    miniCls() {
+      return this.playing ? "icon-pause-mini" : "icon-play-mini";
     },
     cdCls() {
       return this.playing ? "play" : "play pause";
+    },
+    percent() {
+      return this.currentTime / this.music.duration;
     },
     ...mapGetters(["fullScreen", "playlist", "music", "playing"]),
   },
@@ -137,6 +206,47 @@ export default {
       this.$refs.cdWrapper.style.transition = "";
       this.$refs.cdWrapper.style[transform] = "";
     },
+    updateTime(e) {
+      this.currentTime = e.target.currentTime;
+    },
+    onProgressBarChange(percent) {
+      const currentTime = this.music.duration * percent;
+      this.$refs.audio.currentTime = currentTime;
+      if (!this.playing) {
+        this.togglePlaying();
+      }
+    },
+    format(interval) {
+      interval = interval | 0;
+      const minute = (interval / 60) | 0;
+      const second = this._pad(interval % 60);
+      return `${minute}:${second}`;
+    },
+    getLyric() {
+      this.currentLyric = new Lyric(this.music.lyric, this.handleLyric);
+      if (this.playing) {
+        this.currentLyric.play();
+      }
+      console.log(this.music.lyric,this.currentLyric);
+    },
+    handleLyric({ lineNum, txt }) {
+      this.currentLineNum = lineNum;
+      if (lineNum > 5) {
+        let lineEl = this.$refs.lyricLine[lineNum - 5];
+        this.$refs.lyricList.scrollToElement(lineEl, 1000);
+      } else {
+        this.$refs.lyricList.scrollTo(0, 0, 1000);
+      }
+      this.playingLyric = txt;
+    },
+    _pad(num, n = 2) {
+      let len = num.toString().length;
+      while (len < n) {
+        num = "0" + num;
+        len++;
+      }
+      return num;
+    },
     _getPosAndScale() {
       const targetWidth = 40;
       const paddingLeft = 40;
@@ -164,6 +274,7 @@ export default {
     music() {
       this.$nextTick(() => {
         this.$refs.audio.play();
+        this.getLyric();
       });
     },
     playing() {
@@ -278,12 +389,70 @@ export default {
             }
           }
         }
+        .playing-lyric-wrapper {
+          margin: 30px auto 0 auto;
+          overflow: hidden;
+          text-align: center;
+          width: 80%;
+          .playing-lyric {
+            color: @color-text-l;
+            font-size: @font-size-medium;
+            height: 20px;
+            line-height: 20px;
+          }
+        }
+      }
+
+      .middle-r {
+        display: inline-block;
+        height: 100%;
+        overflow: hidden;
+        vertical-align: top;
+        width: 100%;
+        .lyric-wrapper {
+          margin: 0 auto;
+          overflow: hidden;
+          text-align: center;
+          width: 80%;
+          .text {
+            color: @color-text-l;
+            font-size: @font-size-medium;
+            line-height: 32px;
+          }
+          .text.current {
+            color: @color-text;
+          }
+        }
       }
     }
     .bottom {
       position: absolute;
       bottom: 50px;
       width: 100%;
+      .progress-wrapper {
+        display: flex;
+        align-items: center;
+        width: 80%;
+        margin: 0px auto;
+        padding: 10px 0;
+        .time {
+          color: @color-text;
+          font-size: @font-size-small;
+          flex: 0 0 30px;
+          line-height: 30px;
+          width: 30px;
+          &.time-l {
+            text-align: left;
+          }
+          &.time-r {
+            text-align: right;
+          }
+        }
+        .progress-bar-wrapper {
+          flex: 1;
+        }
+      }
+
       .operators {
         display: flex;
         align-items: center;
@@ -407,18 +576,24 @@ export default {
     }
     .control {
       flex: 0 0 30px;
-      width: 30px;
       padding: 0 10px;
-      .icon-play-mini,
-      .icon-pause-mini,
-      .icon-playlist {
-        font-size: 30px;
+      width: 30px;
+      .icon-play-mini {
         color: @color-theme-d;
+        font-size: 30px;
+      }
+      .icon-pause-mini {
+        color: @color-theme-d;
+        font-size: 30px;
+      }
+      .icon-playlist {
+        color: @color-theme-d;
+        font-size: 30px;
       }
       .icon-mini {
         font-size: 32px;
-        position: absolute;
         left: 0;
+        position: absolute;
         top: 0;
       }
     }

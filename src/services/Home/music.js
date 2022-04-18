@@ -6,9 +6,21 @@ const musicListAPI = (params) =>
     params,
   });
 
-const musicUrlAPI = params => request({
-  url:"/song/url",
-  params
-})
+const musicUrlAPI = (params) =>
+  request({
+    url: "/song/url",
+    params,
+  });
 
-export { musicListAPI, musicUrlAPI };
+const musicDetailAPI = (params) =>
+  request({
+    url: "/song/detail",
+    params,
+  });
+
+const musicLyricAPI = (params) =>
+  request({
+    url: "/lyric",
+    params,
+  });
+export { musicListAPI, musicUrlAPI, musicDetailAPI, musicLyricAPI };
