@@ -1,5 +1,10 @@
 import { request } from "../request";
 
+const recommendBannerAPI = params => request({
+  url:"/banner",
+  params
+})
+
 const recommendAlbumAPI = (params) =>
   request({
     url: "/personalized",
@@ -27,4 +32,5 @@ export {
   recommendMusicAPI,
   recommendDjProgramAPI,
   recommendPerformanceAPI,
+  recommendBannerAPI
 };

@@ -6,4 +6,9 @@ const userPlaylistAPI = (params) =>
     params,
   });
 
-export { userPlaylistAPI };
+const userDetailAPI = (params) =>
+  request({
+    url: "/user/detail",
+    params,
+  });
+export { userPlaylistAPI, userDetailAPI };

@@ -5,6 +5,7 @@
         v-for="banner in banners"
         :key="banner.bannerId"
         class="banner-item"
+        @click="swipeClick(banner.targetId, banner.typeTitle)"
       >
         <img :src="banner.pic" />
         <van-tag color="#6D6875" size="medium" class="banner-tag">{{
@@ -16,33 +17,52 @@
 </template>
 
 <script>
+import { recommendBannerAPI } from "@/services";
 import { Swipe, SwipeItem, Tag } from "vant";
 export default {
   name: "RecommendSwipe",
-  props: {
-    swipeList: {
-      type: Object,
-      default() {
-        return {};
-      },
-    },
-  },
+  props: {},
   components: {
     [Swipe.name]: Swipe,
     [SwipeItem.name]: SwipeItem,
     [Tag.name]: Tag,
   },
   data() {
-    return {};
+    return {
+      swipeList: [],
+    };
   },
   computed: {
     banners() {
-      return this.swipeList?.extInfo?.banners.filter(
+      return this.swipeList?.filter(
         (banner) =>
-          banner.typeTitle === "新歌首发" || banner.typeTitle === "歌单"
+          banner.typeTitle === "新歌首发" ||
+          banner.typeTitle === "歌单" ||
+          banner.typeTitle === "新碟首发"
       );
     },
-  }
+  },
+  methods: {
+    swipeClick(targetId, typeTitle) {
+      this.$store.commit("showNavBarLeftIcon", true);
+      if(typeTitle === "新碟首发" || typeTitle === "歌单"){
+        this.$router.push({
+          path:"/playlist",
+          query:{
+            id:targetId
+          }
+        })
+      }
+    },
+  },
+  async created() {
+    let { data } = await recommendBannerAPI({ type: 2 });
+    if (data.code === 200) {
+      this.swipeList = data.banners;
+    } else {
+      this.swipeList = [];
+    }
+  },
 };
 </script>
 

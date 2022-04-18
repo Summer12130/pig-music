@@ -27,19 +27,21 @@
           >我的</van-tabbar-item
         >
       </van-tabbar>
+      <player></player>
     </div>
   </van-config-provider>
 </template>
 
 <script>
 import { NavBar, Tabbar, TabbarItem, ConfigProvider } from "vant";
-
+import Player from '@/components/Player/Player'
 export default {
   components: {
     [NavBar.name]: NavBar,
     [Tabbar.name]: Tabbar,
     [TabbarItem.name]: TabbarItem,
     [ConfigProvider.name]: ConfigProvider,
+    Player
   },
   data() {
     return {

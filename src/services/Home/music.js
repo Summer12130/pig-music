@@ -6,4 +6,9 @@ const musicListAPI = (params) =>
     params,
   });
 
-export { musicListAPI };
+const musicUrlAPI = params => request({
+  url:"/song/url",
+  params
+})
+
+export { musicListAPI, musicUrlAPI };

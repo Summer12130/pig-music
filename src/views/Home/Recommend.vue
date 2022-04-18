@@ -2,7 +2,7 @@
   <div class="recommend">
     <b-scroll class="scroll-wrapper">
       <div>
-        <recommend-swipe :swipe-list="swipeList"></recommend-swipe>
+        <recommend-swipe></recommend-swipe>
         <recommend-play-list @toAlbumsPage="toAlbumsPage"></recommend-play-list>
         <recommend-music @toMusicPage="toMusicPage"></recommend-music>
         <recommend-dj @toDJPage="toDJPage"></recommend-dj>
@@ -39,9 +39,6 @@ export default {
     },
   },
   computed: {
-    swipeList() {
-      return this.homeRecommend.banners;
-    },
   },
   methods: {
     toMusicPage(payload) {

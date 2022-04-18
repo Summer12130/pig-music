@@ -1,5 +1,6 @@
 <template>
-  <div class="palylist-detail">
+
+    <div class="palylist-detail ">
     <div class="playlist-cover">
       <van-card
         :desc="playlist.description"
@@ -30,7 +31,7 @@
       </van-card>
     </div>
     <div class="playlist-song-wrapper">
-      <van-notice-bar color="#1989fa" background="#ecf9ff" left-icon="info-o">
+      <van-notice-bar color="#1989fa" background="#ecf9ff" left-icon="info-o" v-if="this.$store.state.isLoading">
         登陆后加载更多哦！
       </van-notice-bar>
       <van-cell-group>
@@ -112,6 +113,7 @@
       </div>
     </van-popup>
   </div>
+
 </template>
 
 <script>
@@ -146,18 +148,21 @@ export default {
   async created() {
     this.currentQueryId = this.$route.query.id;
     let { data } = await playlistDetailAPI({ id: this.currentQueryId });
+    console.log(data);
     if (data.code === 200) {
       this.playlist = data?.playlist;
       this.trackIds = data?.playlist.trackIds.map((track) => track.id);
-    } else {
+    } else if(data){
       this.playlist = [];
       this.trackIds = [];
     }
   },
   async activated() {
+    
     if (this.$route.query.id !== this.currentQueryId) {
       this.currentQueryId = this.$route.query.id;
       let { data } = await playlistDetailAPI({ id: this.currentQueryId });
+      console.log(data);
       if (data.code === 200) {
         this.playlist = data?.playlist;
         this.trackIds = data?.playlist.trackIds.map((track) => track.id);

@@ -7,6 +7,7 @@ export {
   recommendMusicAPI,
   recommendDjProgramAPI,
   recommendPerformanceAPI,
+  recommendBannerAPI
 } from "./Home/recommend";
 
 // Playlist
@@ -16,7 +17,7 @@ export { playlistTagsAPI } from "./Home/playlists";
 export { singersListAPI } from "./Home/singers";
 
 // Music
-export { musicListAPI } from "./Home/music";
+export { musicListAPI, musicUrlAPI } from "./Home/music";
 
 // DJ
 export { djListAPI, djRecommendListAPI } from "./Home/dj";
@@ -37,4 +38,13 @@ export { playlistDetailAPI } from "./Detail/playlist";
 // User页面接口
 
 // UserProfile
-export { userPlaylistAPI } from "./User/user";
+export { userPlaylistAPI, userDetailAPI } from "./User/user";
+
+// Login
+export {
+  cellphoneLoginAPI,
+  sentSMSAPI,
+  verifySMSAPI,
+  userAccountAPI,
+  loginStatusAPI,
+} from "./User/login";

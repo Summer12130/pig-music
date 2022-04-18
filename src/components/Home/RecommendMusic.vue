@@ -19,7 +19,7 @@
             lazy-load
           ></van-image>
         </template>
-        <div class="music-">
+        <div class="music">
           <span>{{ music.name }}</span
           ><br />
           <span>{{ music?.song?.artists[0]?.name }}</span>

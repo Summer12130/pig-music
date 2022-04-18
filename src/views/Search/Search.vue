@@ -1,5 +1,6 @@
 <template>
-  <div class="search">
+
+    <div class="search">
     <van-search
       v-model="keywords"
       input-align="center"
@@ -39,7 +40,7 @@
             </van-cell-group>
           </van-tab>
         </van-tabs>
-        <transition name="van-slide-up">
+
           <div class="hot-keyword-wrapper" v-if="!keywords">
             <van-tag
               plain
@@ -53,8 +54,8 @@
               {{ hot.first }}
             </van-tag>
           </div>
-        </transition>
-        <van-empty image-size="1rem" description="暂无数据" v-if="isEmpty" />
+
+        <van-empty image-size="1rem" description="暂无数据" v-if="isEmpty && keywords" />
       </div>
     </div>
   </div>

@@ -48,56 +48,62 @@
 
 <script>
 import { userPlaylistAPI } from "@/services";
+import formatCity from "@/utils/formatCity";
 export default {
   name: "UserProfile",
   props: {
-    baseInfo: {
+    profile: {
       type: Object,
       default() {
-        return {
-          useTime: {
-            title: "使用时间",
-            value: "4年(2017年11月注册)",
-          },
-          gender: {
-            title: "性别",
-            value: "男",
-          },
-          area: {
-            title: "地区",
-            value: "四川 成都",
-          },
-          signature: {
-            title: "个人简介",
-            value: "晚安早点睡.",
-          },
-        };
+        return {};
       },
-    },
-    uid: {
-      type: Number,
-      default: 644969525,
     },
   },
   data() {
     return {
       userPlaylist: [],
+      uid: 0,
     };
   },
   computed: {
     createdPlaylist() {
       return this.userPlaylist.filter(
-        (playlist) => playlist.userId === this.uid
+        (playlist) => playlist.userId === this.profile.profile?.userId
       );
     },
     collectedPlaylist() {
       return this.userPlaylist.filter(
-        (playlist) => playlist.userId !== this.uid
+        (playlist) => playlist.userId !== this.profile.profile?.userId
       );
+    },
+    baseInfo() {
+      return {
+        gender: {
+          title: "性别",
+          value:
+            this.profile.profile?.gender === 1
+              ? "男"
+              : this.profile.profile?.gender === 2
+              ? "女"
+              : "未知",
+        },
+        area: {
+          title: "地区",
+          value: formatCity.getAreaByIdCard(this.profile.profile?.city + ""),
+        },
+        signature: {
+          title: "个人简介",
+          value: this.profile.profile?.signature,
+        },
+        useTime: {
+          title: "使用时间",
+          value: this.profile?.createDays + " 天",
+        },
+      };
     },
   },
   methods: {
-    toPlayListDetail(id){
+    toPlayListDetail(id) {
       this.$store.commit("showNavBarLeftIcon", true);
       this.$router.push({
         path: "/playlist",
@@ -105,10 +111,11 @@ export default {
           id,
         },
       });
-    }
+    },
   },
   async created() {
-    let { data } = await userPlaylistAPI({ uid: this.uid });
+    const uid = this.$route.query.uid;
+    let { data } = await userPlaylistAPI({ uid });
     if (data.code === 200) {
       this.userPlaylist = data.playlist;
     } else {

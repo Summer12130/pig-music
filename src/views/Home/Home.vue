@@ -29,9 +29,9 @@
       class="home-router-view"
     >
       <keep-alive>
-        <transition name="van-slide-left">
+
           <component :is="Component" />
-        </transition>
+
       </keep-alive>
     </router-view>
   </div>

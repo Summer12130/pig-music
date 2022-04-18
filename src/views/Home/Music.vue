@@ -40,6 +40,7 @@
           :key="music.id"
           :title="music.name"
           :label="music?.song?.artists[0]?.name"
+          @click="playMusic(music)"
           center
         >
           <template #right-icon>
@@ -54,9 +55,10 @@
 </template>
 
 <script>
-import { musicListAPI } from "@/services";
+import { musicListAPI, musicUrlAPI } from "@/services";
 import { Icon, List, PullRefresh, Toast } from "vant";
 import { shuffle } from "@/utils/utils";
+import { mapActions } from "vuex";
 export default {
   name: "Music",
   components: {
@@ -100,6 +102,20 @@ export default {
         Toast("刷新成功");
       }, 300);
     },
+    async playMusic(music) {
+      music.url =
+        "http://m7.music.126.net/20220418154441/d08f57b7680ee939bb90795658b8bd1f/ymusic/0fd6/4f65/43ed/a8772889f38dfcb91c04da915b301617.mp3";
+      console.log(music);
+      let { data } = await musicUrlAPI({ id: music.id });
+      if (data.code === 200) {
+        music.url = data?.data[0]?.url;
+        this.selectPlay({ music, musicId: music.id });
+      }else{
+        music.url = ""
+        this.selectPlay({ music, musicId: music.id });
+      }
+    },
+    ...mapActions(["selectPlay"]),
   },
   async created() {
     let { data } = await musicListAPI({ limit: this.limit });
