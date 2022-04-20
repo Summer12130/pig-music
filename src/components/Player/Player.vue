@@ -1,5 +1,5 @@
 <template>
-  <div class="player" v-show="playlist.length > 0">
+  <div class="player" v-show="playlist.length > 0 && showPlayer">
     <transition
       name="normal"
       @enter="enter"
@@ -54,6 +54,10 @@
           </b-scroll>
         </div>
         <div class="bottom">
+          <div class="special-operators">
+            <van-icon name="comment-o" @click="clickComments"></van-icon>
+            <van-icon name="orders-o" @click="clickOrders"></van-icon>
+          </div>
           <div class="dot-wrapper">
             <span class="dot" :class="{ active: currentShow === 'cd' }"></span>
             <span
@@ -89,10 +93,82 @@
               <van-icon name="arrow" />
             </div>
             <div class="icon i-right">
-              <van-icon name="like-o" />
+              <van-icon name="like-o" @click="clickLikeMusic" />
             </div>
           </div>
         </div>
+        <van-popup
+          v-model:show="showPlayLists"
+          round
+          position="bottom"
+          :style="{ height: '30%' }"
+          class="playlist-wrapper"
+        >
+          <div class="header">
+            <h1 class="title">歌曲列表</h1>
+          </div>
+          <van-cell-group>
+            <van-cell
+              v-for="music in playlist"
+              :title="music.name"
+              :value="music?.song?.artists[0]?.name"
+              @click="switchMusic(music)"
+            ></van-cell>
+          </van-cell-group>
+        </van-popup>
+        <van-popup
+          v-model:show="showComments"
+          round
+          position="bottom"
+          :style="{ height: '70%' }"
+          class="comment-wrapper"
+        >
+          <div class="header">
+            <h1 class="title">评论</h1>
+          </div>
+          <div class="comment-content">
+            <van-list
+              v-model:loading="loadingComment"
+              :finished="finishedComment"
+              finished-text="没有更多了"
+              @load="onLoadComment"
+            >
+              <div
+                v-for="comment in comments"
+                :key="comment.commentId"
+                class="comment-item"
+              >
+                <div class="user-info">
+                  <div class="user-avatar">
+                    <van-image
+                      :src="comment.user.avatarUrl"
+                      width="30"
+                      height="30"
+                      round
+                      @click="toUserPage(comment.user)"
+                    ></van-image>
+                  </div>
+                  <div class="user-nickname">
+                    {{ comment.user.nickname }}
+                  </div>
+                  <div class="comment-time">
+                    {{ comment.timeStr }}
+                  </div>
+                </div>
+                <div class="comment-info">
+                  {{ comment.content }}
+                </div>
+                <div class="comment-operators">
+                  <van-icon
+                    :name="comment.liked ? 'like' : 'like-o'"
+                    :color="comment.liked ? 'red' : ''"
+                  ></van-icon
+                  >{{ comment.likedCount }}
+                </div>
+              </div>
+            </van-list>
+          </div>
+        </van-popup>
       </div>
     </transition>
     <transition name="mini">
@@ -114,7 +190,11 @@
           </progress-circle>
         </div>
         <div class="control">
-          <van-icon name="music" class="icon-playlist"></van-icon>
+          <van-icon
+            name="close"
+            class="icon-playlist"
+            @click.stop="closePlayer"
+          ></van-icon>
         </div>
       </div>
     </transition>
@@ -130,11 +210,15 @@ import { prefixStyle } from "@/utils/dom";
 import ProgressBar from "@/components/Player/ProgressBar";
 import ProgressCircle from "@/components/Player/ProgressCircle";
 import BScroll from "@/components/common/Scroll/BScroll";
+import { List, Popup, Toast } from "vant";
+import { musicCommentAPI, likeMusicAPI } from "@/services";
 const transform = prefixStyle("transform");
 const transitionDuration = prefixStyle("transitionDuration");
 export default {
   name: "Player",
   components: {
+    [Popup.name]: Popup,
+    [List.name]: List,
     ProgressBar,
     ProgressCircle,
     BScroll,
@@ -147,6 +231,13 @@ export default {
       playingLyric: "",
       currentLineNum: 0,
       currentShow: "cd",
+      showPlayLists: false,
+      showComments: false,
+      comments: [],
+      commentOffset: 0,
+      showPopover: false,
+      loadingComment: false,
+      finishedComment: false,
     };
   },
   computed: {
@@ -168,7 +259,7 @@ export default {
     percent() {
       return this.currentTime / this.music.duration;
     },
-    ...mapGetters(["fullScreen", "playlist", "music", "playing"]),
+    ...mapGetters(["fullScreen", "playlist", "music", "playing", "showPlayer"]),
   },
   methods: {
     back() {
@@ -358,9 +449,69 @@ export default {
         this.currentLyric.togglePlay();
       }
     },
+    closePlayer() {
+      this.setPlayerStatus(false);
+    },
+    clickOrders() {
+      this.showPlayLists = true;
+    },
+    async clickComments() {
+      this.showComments = true;
+      if (this.comments.length > 0) return;
+      let { data } = await musicCommentAPI({
+        id: this.music.id,
+        limit: 20,
+        offset: this.commentOffset,
+      });
+      if (data.code === 200 && data.comments.length) {
+        this.comments = data.hotComments;
+        this.comments.push(...data.comments);
+      } else {
+        this.finishedComment = true;
+      }
+    },
+    switchMusic(music) {
+      this.setMusic(music);
+      this.showPlayLists = false;
+    },
+    onSelectCommentSort() {
+      console.log(1111);
+    },
+    clickLikeMusic() {},
+    async onLoadComment() {
+      let { data } = await musicCommentAPI({
+        id: this.music.id,
+        limit: 20,
+        offset: ++this.commentOffset,
+      });
+      if (data.code === 200 && data.comments.length > 0) {
+        this.comments.push(...data.comments);
+        this.loadingComment = false;
+      } else {
+        this.finishedComment = true;
+      }
+    },
+    toUserPage(user) {
+      this.setNavLeftArrow(true);
+      this.setPlayerStatus(false);
+      this.showPopover = false;
+      this.showComments = false;
+      this.showPlayLists = false;
+      this.loadingComment = false;
+      this.finishedComment = false;
+      this.$router.push({
+        path: "/user/detail",
+        query: {
+          uid: user.userId,
+        },
+      });
+    },
     ...mapMutations({
       setFullScreen: "SET_FULL_SCREEN",
       setPlayingState: "SET_PLAYING_STATE",
+      setPlayerStatus: "SET_PLAYER_STATUS",
+      setMusic: "SET_MUSIC",
+      setNavLeftArrow: "SET_NAV_LEFT_ARROW",
     }),
   },
   created() {
@@ -376,6 +527,13 @@ export default {
         this.$refs.audio.play();
         this.getLyric();
       });
+      this.comments = [];
+      this.commentOffset = 0;
+      this.showPopover = false;
+      this.showComments = false;
+      this.showPlayLists = false;
+      this.loadingComment = false;
+      this.finishedComment = false;
     },
     playing() {
       const audio = this.$refs.audio;
@@ -529,6 +687,16 @@ export default {
       position: absolute;
       bottom: 50px;
       width: 100%;
+      .special-operators {
+        display: flex;
+        justify-content: flex-end;
+        padding: 0.08rem 0.34rem;
+        font-size: @font-size-large-x;
+        color: @color-theme;
+        .van-icon {
+          margin-left: 0.15rem;
+        }
+      }
       .dot-wrapper {
         font-size: 0;
         text-align: center;
@@ -601,6 +769,69 @@ export default {
         }
         .icon-favorite {
           color: @color-sub-theme;
+        }
+      }
+    }
+    .playlist-wrapper {
+      .header {
+        position: relative;
+        padding: 0.15rem;
+        h1 {
+          font-size: @font-size-large;
+          text-align: center;
+        }
+      }
+    }
+    .comment-wrapper {
+      .header {
+        position: relative;
+        padding: 0.15rem;
+        h1 {
+          font-size: @font-size-large;
+          text-align: center;
+        }
+      }
+      .comment-content {
+        width: 90%;
+        margin: 0.1rem auto;
+        .comment-item {
+          padding: 0.15rem;
+          margin-bottom: 0.15rem;
+          border-radius: 0.08rem;
+          background: #ee9ca7; /* fallback for old browsers */
+          background: -webkit-linear-gradient(
+            to left,
+            #ffdde1,
+            #ee9ca7
+          ); /* Chrome 10-25, Safari 5.1-6 */
+          background: linear-gradient(
+            to left,
+            #ffdde1,
+            #ee9ca7
+          ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+          .user-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: @font-size-medium;
+            .comment-nickname {
+              font-size: @font-size-medium;
+              color: gray;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
+            }
+          }
+          .comment-info {
+            font-size: @font-size-small;
+            padding: 0.15rem;
+          }
+          .comment-operators {
+            font-size: @font-size-small;
+            padding: 0 0.15rem;
+            text-align: right;
+          }
         }
       }
     }

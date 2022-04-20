@@ -11,4 +11,6 @@ const userDetailAPI = (params) =>
     url: "/user/detail",
     params,
   });
+
+
 export { userPlaylistAPI, userDetailAPI };

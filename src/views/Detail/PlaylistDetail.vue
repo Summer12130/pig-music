@@ -34,7 +34,7 @@
         color="#1989fa"
         background="#ecf9ff"
         left-icon="info-o"
-        v-if="this.$store.state.isLoading"
+        v-if="isLogin"
       >
         登陆后加载更多哦！
       </van-notice-bar>
@@ -126,7 +126,7 @@
 
 <script>
 import { playlistDetailAPI, musicUrlAPI, musicLyricAPI } from "@/services";
-import { mapActions } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 import { Card, Divider, NoticeBar, Popup } from "vant";
 export default {
   name: "PlaylistDetail",
@@ -148,6 +148,7 @@ export default {
     isFollowed() {
       return this.playlist?.creator?.followed ? "已关注" : "关注";
     },
+    ...mapGetters(["isLogin"]),
   },
   methods: {
     showCreatorInfo() {
@@ -169,7 +170,7 @@ export default {
       }
       console.log(music);
     },
-    ...mapActions(["selectPlay"])
+    ...mapActions(["selectPlay"]),
   },
   async created() {
     this.currentQueryId = this.$route.query.id;

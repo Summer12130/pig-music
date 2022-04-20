@@ -6,9 +6,10 @@ const playlistTagsAPI = (params) =>
     params,
   });
 
-const playlistDataAPI = params => request({
-  url:'/top/playlist/highquality',
-  params
-})
+const playlistDataAPI = (params) =>
+  request({
+    url: "/top/playlist/highquality",
+    params,
+  });
 
-export { playlistTagsAPI };
+export { playlistTagsAPI, playlistDataAPI };

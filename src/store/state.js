@@ -3,6 +3,7 @@ export default {
   showLeftArrow: false,
   isLogin: false,
   userInfo:false,
+  showPlayer:false,
   music: {},
   playing: false,
   fullScreen: false,
@@ -10,5 +11,6 @@ export default {
   sequenceList: [],
   mode: playMode.sequence,
   currentIndex: -1,
-  singer:null
+  singer:null,
+  navTitle:""
 }

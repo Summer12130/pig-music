@@ -57,6 +57,7 @@ import { Sticky, Tab, Tabs, Toast } from "vant";
 import UserProfile from "@/components/User/UserProfile";
 import UserMoments from "@/components/User/UserMoments";
 import UserPodcasting from "@/components/User/UserPodcasting";
+import { mapMutations } from "vuex";
 export default {
   name: "UserDetail",
   components: {
@@ -79,8 +80,11 @@ export default {
       Toast("修改成功");
     },
     showName() {
-      this.$emit("showUserName", "你好小思大人");
+      this.setNavTitle(this.userDetail.profile.nickname);
     },
+    ...mapMutations({
+      setNavTitle: "SET_NAV_TITLE",
+    }),
   },
   computed: {
     avatar() {

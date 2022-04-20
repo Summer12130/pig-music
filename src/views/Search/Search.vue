@@ -1,6 +1,5 @@
 <template>
-
-    <div class="search">
+  <div class="search">
     <van-search
       v-model="keywords"
       input-align="center"
@@ -36,34 +35,46 @@
                 v-for="data in tabsData[tab.name]"
                 :title="data.name"
                 :key="data.id"
+                @click="clickCell(data, tab.title)"
               />
             </van-cell-group>
           </van-tab>
         </van-tabs>
 
-          <div class="hot-keyword-wrapper" v-if="!keywords">
-            <van-tag
-              plain
-              type="primary"
-              v-for="hot in hots"
-              :key="hot.first"
-              class="hot-tag"
-              size="large"
-              @click="tagClick"
-            >
-              {{ hot.first }}
-            </van-tag>
-          </div>
+        <div class="hot-keyword-wrapper" v-if="!keywords">
+          <van-tag
+            plain
+            type="primary"
+            v-for="hot in hots"
+            :key="hot.first"
+            class="hot-tag"
+            size="large"
+            @click="tagClick"
+          >
+            {{ hot.first }}
+          </van-tag>
+        </div>
 
-        <van-empty image-size="1rem" description="暂无数据" v-if="isEmpty && keywords" />
+        <van-empty
+          image-size="1rem"
+          description="暂无数据"
+          v-if="isEmpty && keywords"
+        />
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { searchSuggestListAPI, hotKeyWordsAPI } from "@/services";
+import {
+  searchSuggestListAPI,
+  hotKeyWordsAPI,
+  musicUrlAPI,
+  musicDetailAPI,
+  musicLyricAPI,
+} from "@/services";
 import { Empty, Search, Tab, Tabs, Toast } from "vant";
+import { mapActions } from "vuex";
 
 export default {
   name: "Search",
@@ -155,6 +166,29 @@ export default {
       this.keywords = e.target.innerText;
       this.onSearch();
     },
+    clickCell(song, tag) {
+      if (tag === "歌曲") {
+        this.playMusic(song);
+      }
+    },
+    async playMusic(song) {
+      const music = { song, name: song.name };
+      let { data: url } = await musicUrlAPI({ id: song.id });
+      let { data: detail } = await musicDetailAPI({ ids: song.id });
+      let { data: lyric } = await musicLyricAPI({ id: song.id });
+      if (url.code === 200) {
+        music.url = url?.data[0]?.url;
+        music.duration = music.song.duration / 1000;
+        music.lyric = lyric?.lrc?.lyric;
+        music.picUrl = detail?.songs[0]?.al?.picUrl;
+        this.selectPlay({ music, musicId: music.id });
+      } else {
+        music.url = "";
+        this.selectPlay({ music, musicId: music.id });
+      }
+      console.log(music);
+    },
+    ...mapActions(["selectPlay"]),
   },
   async created() {
     let { data } = await hotKeyWordsAPI();

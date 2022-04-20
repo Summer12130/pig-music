@@ -11,7 +11,7 @@ export {
 } from "./Home/recommend";
 
 // Playlist
-export { playlistTagsAPI } from "./Home/playlists";
+export { playlistTagsAPI, playlistDataAPI } from "./Home/playlists";
 
 // Singers
 export { singersListAPI } from "./Home/singers";
@@ -56,3 +56,7 @@ export {
   userAccountAPI,
   loginStatusAPI,
 } from "./User/login";
+
+// Song 接口
+
+export { likeMusicAPI, musicCommentAPI } from "./Song/song";

@@ -63,9 +63,9 @@ const routes = [
     path: "/user",
     name: "User",
     component: () => import("@/views/User/User.vue"),
-    meta: {
-      title: "用户",
-    },
+    // meta: {
+    //   title: "用户",
+    // },
   },
   {
     path: "/user/detail",

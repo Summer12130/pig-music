@@ -15,7 +15,14 @@
         {{ profile.nickname }}
       </template>
     </van-cell>
-
+    <van-grid :column-num="3">
+      <van-grid-item
+        v-for="value in 6"
+        :key="value"
+        icon="photo-o"
+        text="文字"
+      />
+    </van-grid>
     <!-- 登录逻辑 -->
     <van-popup
       v-model:show="toLogin"
@@ -97,6 +104,7 @@ import {
   loginStatusAPI,
 } from "@/services";
 import { Popup, Toast, Form, Field, Tabs, Tab } from "vant";
+import { mapGetters, mapMutations } from "vuex";
 export default {
   name: "User",
   components: {
@@ -109,23 +117,22 @@ export default {
   data() {
     return {
       toLogin: false,
-      isLogin: false,
       phoneNumber: "",
       password: "",
       sms: "",
       active: 0,
-      userInfo: this.$store.state.userInfo,
       profile: { username: "请登录", avatar: "" },
     };
   },
-  computed: {},
+  computed: {
+    ...mapGetters(["isLogin", "userInfo"]),
+  },
   methods: {
     login() {
-      const isLogin = this.$store.state.isLogin;
-      if (!isLogin) {
+      if (!this.isLogin) {
         this.toLogin = true;
       } else {
-        this.$store.commit("showNavBarLeftIcon", true);
+        this.setNavLeftArrow(true);
         this.$router.push({
           path: "/user/detail",
           query: {
@@ -144,18 +151,18 @@ export default {
         let { data } = await userAccountAPI();
         console.log(data, "userAccountAPI");
         if (data.code === 200 && data.profile) {
-          this.$store.commit("login");
-          this.$store.commit("userInfo", data);
+          this.setLoginStatus(true);
+          this.setUserInfo(data);
           this.profile = data.profile;
-          this.isLogin = true;
         }
         Toast("登陆成功");
         this.toLogin = false;
       } else if (data.code === 502) {
-        this.userInfo = {};
+        this.setUserInfo({});
         Toast(data.msg);
       } else {
-        (this.userInfo = {}), Toast("登陆失败!");
+        this.setUserInfo({});
+        Toast("登陆失败!");
       }
     },
     async sendSms() {
@@ -170,10 +177,9 @@ export default {
       if (data.data) {
         let { data } = await loginStatusAPI();
         if (data.data.profile) {
-          this.$store.commit("login");
-          this.$store.commit("userInfo", data.data);
+          this.setLoginStatus(true);
+          this.setUserInfo(data.data);
           this.profile = data.data.profile;
-          this.isLogin = true;
         }
         Toast("登陆成功");
         this.toLogin = false;
@@ -181,27 +187,34 @@ export default {
         Toast("验证码错误");
       }
     },
+    ...mapMutations({
+      setNavLeftArrow: "SET_NAV_LEFT_ARROW",
+      setLoginStatus: "SET_LOGIN_STATUS",
+      setUserInfo: "SET_USER_INFO",
+      setNavTitle: "SET_NAV_TITLE",
+    }),
   },
   async created() {
     let { data } = await loginStatusAPI();
     if (data.data.profile) {
-      this.$store.commit("login");
-      this.$store.commit("userInfo", data.data);
+      this.setLoginStatus(true);
+      this.setUserInfo(data.data);
       this.profile = data.data.profile;
-      this.isLogin = true;
+      this.setNavTitle(this.profile.nickname);
     } else {
       Toast("请先登录 created!");
     }
   },
   async activated() {
     // 已经登录但没有用户数据
-    console.log("user activated");
-    if (!this.$store.state.userInfo && this.isLogin) {
+
+    this.profile.nickname && this.setNavTitle(this.profile.nickname);
+    if (!this.userInfo && this.isLogin) {
       let { data } = await userAccountAPI();
       if (data.code === 200 && data.profile) {
         console.log("请求用户数据");
-        this.$store.commit("login");
-        this.$store.commit("userInfo", data);
+        this.setLoginStatus(true);
+        this.setUserInfo(data);
       } else {
         Toast("拉取用户信息失败!");
       }

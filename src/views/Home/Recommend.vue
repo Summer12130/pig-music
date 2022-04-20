@@ -55,10 +55,10 @@ export default {
     },
   },
   activated() {
-    console.log(1);
+    
   },
   deactivated() {
-    console.log(2);
+    
   },
 };
 </script>

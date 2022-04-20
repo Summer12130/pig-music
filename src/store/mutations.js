@@ -1,19 +1,19 @@
 import * as types from "./mutation-types";
 export default {
-  showNavBarLeftIcon(state, payload) {
-    state.showLeftArrow = payload;
+  [types.SET_NAV_LEFT_ARROW](state, flag) {
+    state.showLeftArrow = flag;
   },
-  login(state) {
-    state.isLogin = true;
+  [types.SET_USER_INFO](state, user) {
+    state.userInfo = user;
   },
-  logout(state) {
-    state.isLogin = false;
+  [types.SET_LOGIN_STATUS](state, flag) {
+    state.isLogin = flag;
   },
-  userInfo(state, payload) {
-    state.userInfo = payload;
+  [types.SET_PLAYER_STATUS](state, flag) {
+    state.showPlayer = flag;
   },
-  [types.SET_SINGER](state,singer){
-    state.singer = singer
+  [types.SET_SINGER](state, singer) {
+    state.singer = singer;
   },
   [types.SET_MUSIC](state, music) {
     state.music = music;
@@ -36,7 +36,10 @@ export default {
   [types.SET_CURRENT_INDEX](state, index) {
     state.currentIndex = index;
   },
-  [types.ADD_MUSIC](state, music){
-    state.playlist.push(music)
-  }
+  [types.ADD_MUSIC](state, music) {
+    state.playlist.push(music);
+  },
+  [types.SET_NAV_TITLE](state, title) {
+    state.navTitle = title;
+  },
 };

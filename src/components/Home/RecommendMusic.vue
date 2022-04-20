@@ -9,7 +9,13 @@
       @click="toMusic"
     />
     <van-cell-group inset>
-      <van-cell v-for="music in musicLists" :key="music.id" center size="large">
+      <van-cell
+        v-for="music in musicLists"
+        :key="music.id"
+        center
+        size="large"
+        @click="playMusic(music)"
+      >
         <template #title class="custom-title">
           <van-image
             width="55"
@@ -33,15 +39,11 @@
 </template>
 
 <script>
-import { recommendMusicAPI } from "@/services";
-import { Icon, Image as VanImage } from "vant";
-
+import { recommendMusicAPI, musicUrlAPI, musicLyricAPI } from "@/services";
+import { mapActions } from "vuex";
 export default {
   name: "RecommendMusic",
-  components: {
-    [Icon.name]: Icon,
-    VanImage,
-  },
+  components: {},
   data() {
     return {
       title: "推荐音乐",
@@ -60,6 +62,22 @@ export default {
     toMusic() {
       this.$emit("toMusicPage", "/home/music");
     },
+    async playMusic(music) {
+      console.log(music);
+      let { data } = await musicUrlAPI({ id: music.id });
+      // let { data: detailData } = await musicDetailAPI({ ids: music.id });
+      let { data: lyric } = await musicLyricAPI({ id: music.id });
+      if (data.code === 200) {
+        music.url = data?.data[0]?.url;
+        music.duration = music.song.duration / 1000;
+        music.lyric = lyric?.lrc?.lyric;
+        this.selectPlay({ music, musicId: music.id });
+      } else {
+        music.url = "";
+        this.selectPlay({ music, musicId: music.id });
+      }
+    },
+    ...mapActions(["selectPlay"]),
   },
 };
 </script>

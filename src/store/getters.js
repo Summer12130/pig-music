@@ -1,3 +1,5 @@
+export const showLeftArrow = (state) => state.showLeftArrow;
+
 export const music = (state) => state.music;
 
 export const playing = (state) => state.playing;
@@ -15,3 +17,11 @@ export const currentIndex = (state) => state.currentIndex;
 export const currentSong = (state) => state.playlist[state.currentIndex] || {};
 
 export const singer = (state) => state.singer;
+
+export const showPlayer = (state) => state.showPlayer;
+
+export const navTitle = (state) => state.navTitle;
+
+export const isLogin = (state) => state.isLogin;
+
+export const userInfo = (state) => state.userInfo;

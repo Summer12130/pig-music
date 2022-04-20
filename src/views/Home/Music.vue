@@ -109,11 +109,11 @@ export default {
     },
     async playMusic(music) {
       let { data } = await musicUrlAPI({ id: music.id });
-      let { data: detailData } = await musicDetailAPI({ ids: music.id });
+      // let { data: detailData } = await musicDetailAPI({ ids: music.id });
       let { data: lyric } = await musicLyricAPI({ id: music.id });
       if (data.code === 200) {
         music.url = data?.data[0]?.url;
-        music.duration = detailData?.songs[0]?.dt / 1000;
+        music.duration = music.song.duration / 1000
         music.lyric = lyric?.lrc?.lyric;
         this.selectPlay({ music, musicId: music.id });
       } else {

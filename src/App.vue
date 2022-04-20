@@ -2,14 +2,18 @@
   <van-config-provider :theme-vars="themeVars">
     <div id="my-app">
       <van-nav-bar
-        :title="title"
+        :title="navTitle"
         fixed
         z-index="999"
-        :left-arrow="$store.state.showLeftArrow"
+        :left-arrow="showLeftArrow"
         @click-left="onClickLeft"
       />
 
-      <router-view v-slot="{ Component }" class="main-content" :path="path" @showUserName="showUserName">
+      <router-view
+        v-slot="{ Component }"
+        class="main-content"
+        :path="path"
+      >
         <keep-alive>
           <component :is="Component" />
         </keep-alive>
@@ -20,9 +24,9 @@
         <van-tabbar-item replace to="/search" icon="search"
           >搜索</van-tabbar-item
         >
-        <van-tabbar-item replace to="/community" icon="chat-o"
+        <!-- <van-tabbar-item replace to="/community" icon="chat-o"
           >社区</van-tabbar-item
-        >
+        > -->
         <van-tabbar-item replace to="/user" icon="contact"
           >我的</van-tabbar-item
         >
@@ -34,14 +38,15 @@
 
 <script>
 import { NavBar, Tabbar, TabbarItem, ConfigProvider } from "vant";
-import Player from '@/components/Player/Player'
+import Player from "@/components/Player/Player";
+import { mapGetters, mapMutations } from "vuex";
 export default {
   components: {
     [NavBar.name]: NavBar,
     [Tabbar.name]: Tabbar,
     [TabbarItem.name]: TabbarItem,
     [ConfigProvider.name]: ConfigProvider,
-    Player
+    Player,
   },
   data() {
     return {
@@ -57,18 +62,22 @@ export default {
       },
     };
   },
+  computed: {
+    ...mapGetters(["showLeftArrow", "navTitle"]),
+  },
   methods: {
     onClickLeft() {
       this.$router.back();
-      this.$store.commit("showNavBarLeftIcon", false);
+      this.setNavLeftArrow(false);
     },
-    showUserName(username){
-      this.title = username
-    }
+    ...mapMutations({
+      setNavLeftArrow: "SET_NAV_LEFT_ARROW",
+      setNavTitle: "SET_NAV_TITLE",
+    }),
   },
   watch: {
     $route() {
-      this.title = this.$route.meta.title;
+      this.setNavTitle(this.$route.meta.title);
     },
   },
 };

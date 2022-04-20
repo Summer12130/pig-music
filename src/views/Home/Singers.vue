@@ -54,14 +54,7 @@
 
 <script>
 import { singersListAPI } from "@/services";
-import {
-  List,
-  DropdownMenu,
-  DropdownItem,
-  Image as VanImage,
-  Icon,
-  Sticky,
-} from "vant";
+import { List, DropdownMenu, DropdownItem, Sticky } from "vant";
 import { ref } from "vue";
 import { mapMutations } from "vuex";
 export default {
@@ -71,9 +64,7 @@ export default {
     [List.name]: List,
     [DropdownMenu.name]: DropdownMenu,
     [DropdownItem.name]: DropdownItem,
-    [Icon.name]: Icon,
     [Sticky.name]: Sticky,
-    VanImage,
   },
   data() {
     return {
@@ -131,18 +122,19 @@ export default {
     },
     toSingerDetail(singer) {
       console.log(singer);
-      this.$store.commit("showNavBarLeftIcon", true);
-      this.setSinger(singer)
+      this.setNavLeftArrow(true);
+      this.setSinger(singer);
       this.$router.push({
         path: "/singer/detail",
         query: {
-          id:singer.id,
+          id: singer.id,
         },
       });
     },
     ...mapMutations({
-      setSinger: "SET_SINGER"
-    })
+      setSinger: "SET_SINGER",
+      setNavLeftArrow: "SET_NAV_LEFT_ARROW",
+    }),
   },
   async created(flag = false) {
     let { data } = await singersListAPI({

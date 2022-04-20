@@ -30,13 +30,11 @@
 </template>
 
 <script>
-import { Image as VanImage } from "vant";
 import { recommendAlbumAPI } from "@/services";
+import { mapMutations } from "vuex";
 export default {
   name: "RecommendPlayList",
-  components: {
-    VanImage,
-  },
+  components: {},
   data() {
     return {
       playLists: [],
@@ -53,7 +51,7 @@ export default {
       this.$emit("toAlbumsPage", "/home/playlist");
     },
     playlistClick(id) {
-      this.$store.commit("showNavBarLeftIcon", true);
+      this.setNavLeftArrow(true);
       this.$router.push({
         path: "/playlist",
         query: {
@@ -61,6 +59,9 @@ export default {
         },
       });
     },
+    ...mapMutations({
+      setNavLeftArrow: "SET_NAV_LEFT_ARROW",
+    }),
   },
 };
 </script>

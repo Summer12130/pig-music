@@ -5,7 +5,7 @@
         v-for="banner in banners"
         :key="banner.bannerId"
         class="banner-item"
-        @click="swipeClick(banner.targetId, banner.typeTitle)"
+        @click="swipeClick(banner, banner.typeTitle)"
       >
         <img :src="banner.pic" />
         <van-tag color="#6D6875" size="medium" class="banner-tag">{{
@@ -17,8 +17,9 @@
 </template>
 
 <script>
-import { recommendBannerAPI } from "@/services";
+import { recommendBannerAPI, musicUrlAPI, musicLyricAPI } from "@/services";
 import { Swipe, SwipeItem, Tag } from "vant";
+import { mapActions, mapMutations } from "vuex";
 export default {
   name: "RecommendSwipe",
   props: {},
@@ -36,24 +37,45 @@ export default {
     banners() {
       return this.swipeList?.filter(
         (banner) =>
-          banner.typeTitle === "新歌首发" ||
-          banner.typeTitle === "歌单" ||
-          banner.typeTitle === "新碟首发"
+          banner.typeTitle === "新歌首发" || banner.typeTitle === "歌单"
       );
     },
   },
   methods: {
-    swipeClick(targetId, typeTitle) {
-      this.$store.commit("showNavBarLeftIcon", true);
-      if(typeTitle === "新碟首发" || typeTitle === "歌单"){
+    async swipeClick(banner, typeTitle) {
+      if (typeTitle === "歌单") {
+        this.setNavLeftArrow(true);
         this.$router.push({
-          path:"/playlist",
-          query:{
-            id:targetId
-          }
-        })
+          path: "/playlist",
+          query: {
+            id: banner.targetId,
+          },
+        });
+      } else if (typeTitle === "新歌首发") {
+        const music = {
+          picUrl: banner.pic,
+          song: banner.song,
+          name: banner.song.name,
+          id: banner.targetId,
+          duration: banner.song.dt / 1000,
+        };
+        let { data } = await musicUrlAPI({ id: music.id });
+        let { data: lyric } = await musicLyricAPI({ id: music.id });
+        if (data.code === 200) {
+          console.log(music);
+          music.url = data?.data[0]?.url;
+          music.lyric = lyric?.lrc?.lyric;
+          // this.selectPlay({ music, musicId: music.id });
+        } else {
+          music.url = "";
+          // this.selectPlay({ music, musicId: music.id });
+        }
       }
     },
+    ...mapMutations({
+      setNavLeftArrow: "SET_NAV_LEFT_ARROW",
+    }),
+    ...mapActions(["selectPlay"]),
   },
   async created() {
     let { data } = await recommendBannerAPI({ type: 2 });
