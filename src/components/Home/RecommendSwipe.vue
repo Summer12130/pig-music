@@ -52,24 +52,24 @@ export default {
           },
         });
       } else if (typeTitle === "新歌首发") {
-        const music = {
-          picUrl: banner.pic,
-          song: banner.song,
-          name: banner.song.name,
-          id: banner.targetId,
-          duration: banner.song.dt / 1000,
-        };
-        let { data } = await musicUrlAPI({ id: music.id });
-        let { data: lyric } = await musicLyricAPI({ id: music.id });
-        if (data.code === 200) {
-          console.log(music);
-          music.url = data?.data[0]?.url;
-          music.lyric = lyric?.lrc?.lyric;
-          // this.selectPlay({ music, musicId: music.id });
-        } else {
-          music.url = "";
-          // this.selectPlay({ music, musicId: music.id });
-        }
+        // const music = {
+        //   picUrl: banner.pic,
+        //   song: banner.song,
+        //   name: banner.song.name,
+        //   id: banner.targetId,
+        //   duration: banner.song.dt / 1000,
+        // };
+        // let { data } = await musicUrlAPI({ id: music.id });
+        // let { data: lyric } = await musicLyricAPI({ id: music.id });
+        // if (data.code === 200) {
+        //   console.log(music);
+        //   music.url = data?.data[0]?.url;
+        //   music.lyric = lyric?.lrc?.lyric;
+        //   // this.selectPlay({ music, musicId: music.id });
+        // } else {
+        //   music.url = "";
+        //   // this.selectPlay({ music, musicId: music.id });
+        // }
       }
     },
     ...mapMutations({

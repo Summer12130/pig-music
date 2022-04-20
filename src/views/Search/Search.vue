@@ -6,6 +6,7 @@
       show-action
       placeholder="请输入搜索关键词"
       @search="onSearch"
+      @input="keywordsChange"
       left-icon=""
       shape="round"
     >
@@ -20,7 +21,7 @@
         v-if="isLoading"
         class="search-loading"
       />
-      <div class="search-content" v-show="!isLoading">
+      <div class="search-content" v-else>
         <van-tabs
           v-model:active="active"
           swipeable
@@ -41,25 +42,24 @@
           </van-tab>
         </van-tabs>
 
-        <div class="hot-keyword-wrapper" v-if="!keywords">
-          <van-tag
-            plain
-            type="primary"
-            v-for="hot in hots"
-            :key="hot.first"
-            class="hot-tag"
-            size="large"
-            @click="tagClick"
-          >
-            {{ hot.first }}
-          </van-tag>
-        </div>
-
-        <van-empty
-          image-size="1rem"
-          description="暂无数据"
-          v-if="isEmpty && keywords"
-        />
+        <transition name="van-slide-up" mode="out-in">
+          <div class="hot-keyword-wrapper" v-if="!keywords">
+            <van-tag
+              plain
+              type="primary"
+              v-for="hot in hots"
+              :key="hot.first"
+              class="hot-tag"
+              size="large"
+              @click="tagClick"
+            >
+              {{ hot.first }}
+            </van-tag>
+          </div>
+        </transition>
+        <transition name="van-slide-up" mode="out-in">
+          <van-empty image-size="1rem" description="暂无数据" v-if="isEmpty" />
+        </transition>
       </div>
     </div>
   </div>
@@ -142,7 +142,7 @@ export default {
         Toast("请输入您要搜索的内容!");
         return;
       }
-      this.isLoading = !this.isLoading;
+      this.isLoading = true;
       searchSuggestListAPI({ keywords: this.keywords })
         .then((result) => {
           let { data } = result;
@@ -150,12 +150,14 @@ export default {
             this.isEmpty = false;
             this.tabsList = data?.result?.order || [];
             this.tabsData = data.result;
-            this.isLoading = !this.isLoading;
+            setTimeout(() => {
+              this.isLoading = false;
+            }, 600);
             if (!this.tabsList.length) this.isEmpty = true;
           } else {
             Toast("搜索有误😟");
-            this.isEmpty = !this.isEmpty;
-            this.isLoading = true;
+            this.isEmpty = true;
+            this.isLoading = false;
           }
         })
         .catch((err) => {
@@ -170,6 +172,9 @@ export default {
       if (tag === "歌曲") {
         this.playMusic(song);
       }
+    },
+    keywordsChange() {
+      this.isEmpty = false;
     },
     async playMusic(song) {
       const music = { song, name: song.name };
@@ -197,6 +202,13 @@ export default {
     } else {
       this.hots = [];
     }
+  },
+  watch: {
+    keywords(nVal) {
+      if (!nVal.length) {
+        this.tabsList = [];
+      }
+    },
   },
 };
 </script>

@@ -52,6 +52,7 @@ export default {
     },
     playlistClick(id) {
       this.setNavLeftArrow(true);
+      this.setShowTabBar(false);
       this.$router.push({
         path: "/playlist",
         query: {
@@ -61,6 +62,7 @@ export default {
     },
     ...mapMutations({
       setNavLeftArrow: "SET_NAV_LEFT_ARROW",
+      setShowTabBar: "SET_SHOW_TABBAR",
     }),
   },
 };

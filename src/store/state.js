@@ -1,6 +1,7 @@
 import { playMode } from "../utils/config"
 export default {
   showLeftArrow: false,
+  showTabBar:true,
   isLogin: false,
   userInfo:false,
   showPlayer:false,

@@ -133,6 +133,7 @@ export default {
         this.toLogin = true;
       } else {
         this.setNavLeftArrow(true);
+        this.setShowTabBar(false);
         this.$router.push({
           path: "/user/detail",
           query: {
@@ -146,23 +147,24 @@ export default {
         phone: this.phoneNumber,
         password: this.password,
       });
-      console.log(data, "cellphoneAPI");
       if (data.code === 200) {
         let { data } = await userAccountAPI();
-        console.log(data, "userAccountAPI");
         if (data.code === 200 && data.profile) {
           this.setLoginStatus(true);
           this.setUserInfo(data);
           this.profile = data.profile;
+          this.setNavTitle(this.profile.nickname);
         }
         Toast("登陆成功");
         this.toLogin = false;
       } else if (data.code === 502) {
         this.setUserInfo({});
         Toast(data.msg);
+        this.password = "";
       } else {
         this.setUserInfo({});
         Toast("登陆失败!");
+        this.password = "";
       }
     },
     async sendSms() {
@@ -192,6 +194,7 @@ export default {
       setLoginStatus: "SET_LOGIN_STATUS",
       setUserInfo: "SET_USER_INFO",
       setNavTitle: "SET_NAV_TITLE",
+      setShowTabBar: "SET_SHOW_TABBAR",
     }),
   },
   async created() {
@@ -202,7 +205,8 @@ export default {
       this.profile = data.data.profile;
       this.setNavTitle(this.profile.nickname);
     } else {
-      Toast("请先登录 created!");
+      this.setLoginStatus(false);
+      Toast("请先登录!");
     }
   },
   async activated() {

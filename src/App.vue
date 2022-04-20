@@ -9,17 +9,15 @@
         @click-left="onClickLeft"
       />
 
-      <router-view
-        v-slot="{ Component }"
-        class="main-content"
-        :path="path"
-      >
-        <keep-alive>
-          <component :is="Component" />
-        </keep-alive>
+      <router-view v-slot="{ Component }" class="main-content" :path="path">
+        <transition name="fade" mode="out-in" appear>
+          <keep-alive>
+            <component :is="Component" />
+          </keep-alive>
+        </transition>
       </router-view>
 
-      <van-tabbar v-model="active" route>
+      <van-tabbar v-model="active" route v-show="showTabBar">
         <van-tabbar-item replace to="/home" icon="home-o">首页</van-tabbar-item>
         <van-tabbar-item replace to="/search" icon="search"
           >搜索</van-tabbar-item
@@ -63,16 +61,18 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["showLeftArrow", "navTitle"]),
+    ...mapGetters(["showLeftArrow", "navTitle", "showTabBar"]),
   },
   methods: {
     onClickLeft() {
       this.$router.back();
       this.setNavLeftArrow(false);
+      this.setShowTabBar(true);
     },
     ...mapMutations({
       setNavLeftArrow: "SET_NAV_LEFT_ARROW",
       setNavTitle: "SET_NAV_TITLE",
+      setShowTabBar: "SET_SHOW_TABBAR",
     }),
   },
   watch: {
@@ -87,6 +87,18 @@ export default {
 #my-app {
   .main-content {
     padding: 46px 0 50px;
+  }
+  .fade-leave-active,
+  .fade-enter-actice {
+    transition: all 0.15s cubic-bezier(0.39, 0.575, 0.565, 1);
+  }
+  .fade-leave-from,
+  .fade-enter-to {
+    opacity: 1;
+  }
+  .fade-leave-to,
+  .fade-enter-from {
+    opacity: 0;
   }
 }
 </style>

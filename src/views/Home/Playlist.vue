@@ -1,6 +1,10 @@
 <template>
   <div class="playlist-container">
-    <van-index-bar :index-list="indexList" :sticky-offset-top="90">
+    <van-index-bar
+      :index-list="indexList"
+      :sticky-offset-top="90"
+      v-if="!loading"
+    >
       <template v-for="tag in playlistTags" :key="tag.id">
         <van-index-anchor :index="tag.name">{{ tag.name }}</van-index-anchor>
         <van-cell
@@ -28,13 +32,16 @@
         </van-cell>
       </template>
     </van-index-bar>
+    <van-loading size="24px" vertical v-else class="loading-icon"
+      >加载中...</van-loading
+    >
   </div>
 </template>
 
 <script>
 import { playlistTagsAPI, playlistDataAPI } from "@/services";
 import { IndexBar, IndexAnchor } from "vant";
-import {  mapMutations } from "vuex";
+import { mapMutations } from "vuex";
 export default {
   name: "Playlist",
   components: {
@@ -46,6 +53,7 @@ export default {
     return {
       playlistTags: [],
       playList: [],
+      loading: true,
     };
   },
   computed: {
@@ -79,6 +87,9 @@ export default {
       this.playlistTags = data.tags;
       if (playListData.code === 200) {
         this.playList = playListData.playlists;
+        setTimeout(() => {
+          this.loading = false;
+        }, 500);
       } else {
         this.playList = [];
       }
@@ -105,6 +116,12 @@ export default {
         width: 2rem;
       }
     }
+  }
+  .loading-icon {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate3d(-50%, -50%, 0);
   }
 }
 </style>

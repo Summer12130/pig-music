@@ -34,7 +34,7 @@
         color="#1989fa"
         background="#ecf9ff"
         left-icon="info-o"
-        v-if="isLogin"
+        v-if="!isLogin"
       >
         登陆后加载更多哦！
       </van-notice-bar>

@@ -3,6 +3,9 @@ export default {
   [types.SET_NAV_LEFT_ARROW](state, flag) {
     state.showLeftArrow = flag;
   },
+  [types.SET_SHOW_TABBAR](state, flag) {
+    state.showTabBar = flag;
+  },
   [types.SET_USER_INFO](state, user) {
     state.userInfo = user;
   },

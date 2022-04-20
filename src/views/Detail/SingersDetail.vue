@@ -1,35 +1,37 @@
 <template>
-  <div class="singer-detail">
-    <scroll class="scroll-wrapper">
-      <div>
-        <div class="singer-cover">
-          <van-image :src="singer.picUrl"></van-image>
+  <transition name="slide" appear>
+    <div class="singer-detail">
+      <scroll class="scroll-wrapper">
+        <div>
+          <div class="singer-cover">
+            <van-image :src="singer.picUrl"></van-image>
+          </div>
+          <div class="music-list">
+            <van-cell-group inset>
+              <van-cell>
+                <template #title>
+                  <van-icon name="music"></van-icon>
+                </template>
+              </van-cell>
+              <van-cell
+                v-for="music in showList"
+                :key="music.id"
+                :title="music.name"
+                @click="playMusic(music)"
+                center
+              >
+                <template #right-icon>
+                  <van-icon
+                    name="play-circle-o"
+                    class="play-circle-o-icon"
+                  /> </template
+              ></van-cell>
+            </van-cell-group>
+          </div>
         </div>
-        <div class="music-list">
-          <van-cell-group inset>
-            <van-cell>
-              <template #title>
-                <van-icon name="music"></van-icon>
-              </template>
-            </van-cell>
-            <van-cell
-              v-for="music in showList"
-              :key="music.id"
-              :title="music.name"
-              @click="playMusic(music)"
-              center
-            >
-              <template #right-icon>
-                <van-icon
-                  name="play-circle-o"
-                  class="play-circle-o-icon"
-                /> </template
-            ></van-cell>
-          </van-cell-group>
-        </div>
-      </div>
-    </scroll>
-  </div>
+      </scroll>
+    </div>
+  </transition>
 </template>
 
 <script>

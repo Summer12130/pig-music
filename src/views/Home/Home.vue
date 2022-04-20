@@ -29,9 +29,9 @@
       class="home-router-view"
     >
       <keep-alive>
-
+        <transition name="van-fade" mode="out-in">
           <component :is="Component" />
-
+        </transition>
       </keep-alive>
     </router-view>
   </div>

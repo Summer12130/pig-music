@@ -25,3 +25,5 @@ export const navTitle = (state) => state.navTitle;
 export const isLogin = (state) => state.isLogin;
 
 export const userInfo = (state) => state.userInfo;
+
+export const showTabBar = (state) => state.showTabBar;
