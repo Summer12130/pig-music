@@ -40,6 +40,9 @@ export { searchSuggestListAPI, hotKeyWordsAPI } from "./Search/search";
 // PlaylistDetail
 export { playlistDetailAPI } from "./Detail/playlist";
 
+// SingerDetail
+export { singerDetailAPI } from "./Detail/singers";
+
 // User页面接口
 
 // UserProfile

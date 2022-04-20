@@ -27,6 +27,7 @@
           :title="singer.name"
           center
           size="large"
+          @click="toSingerDetail(singer)"
         >
           <template #title class="custom-title">
             <van-image
@@ -62,6 +63,7 @@ import {
   Sticky,
 } from "vant";
 import { ref } from "vue";
+import { mapMutations } from "vuex";
 export default {
   name: "Singers",
   props: {},
@@ -127,6 +129,20 @@ export default {
       this.area = narea;
       this.onLoad(true);
     },
+    toSingerDetail(singer) {
+      console.log(singer);
+      this.$store.commit("showNavBarLeftIcon", true);
+      this.setSinger(singer)
+      this.$router.push({
+        path: "/singer/detail",
+        query: {
+          id:singer.id,
+        },
+      });
+    },
+    ...mapMutations({
+      setSinger: "SET_SINGER"
+    })
   },
   async created(flag = false) {
     let { data } = await singersListAPI({

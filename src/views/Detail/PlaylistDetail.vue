@@ -1,6 +1,5 @@
 <template>
-
-    <div class="palylist-detail ">
+  <div class="palylist-detail">
     <div class="playlist-cover">
       <van-card
         :desc="playlist.description"
@@ -31,11 +30,21 @@
       </van-card>
     </div>
     <div class="playlist-song-wrapper">
-      <van-notice-bar color="#1989fa" background="#ecf9ff" left-icon="info-o" v-if="this.$store.state.isLoading">
+      <van-notice-bar
+        color="#1989fa"
+        background="#ecf9ff"
+        left-icon="info-o"
+        v-if="this.$store.state.isLoading"
+      >
         登陆后加载更多哦！
       </van-notice-bar>
       <van-cell-group>
-        <van-cell v-for="track in playlist.tracks" :key="track.id" center>
+        <van-cell
+          v-for="track in playlist.tracks"
+          :key="track.id"
+          center
+          @click="playMusic(track)"
+        >
           <!-- 使用 title 插槽来自定义标题 -->
           <template #title>
             <span class="custom-title">{{ track.name }}</span>
@@ -113,11 +122,11 @@
       </div>
     </van-popup>
   </div>
-
 </template>
 
 <script>
-import { playlistDetailAPI } from "@/services";
+import { playlistDetailAPI, musicUrlAPI, musicLyricAPI } from "@/services";
+import { mapActions } from "vuex";
 import { Card, Divider, NoticeBar, Popup } from "vant";
 export default {
   name: "PlaylistDetail",
@@ -144,6 +153,23 @@ export default {
     showCreatorInfo() {
       this.showCreator = !this.showCreator;
     },
+    async playMusic(music) {
+      let { data } = await musicUrlAPI({ id: music.id });
+      let { data: lyric } = await musicLyricAPI({ id: music.id });
+      if (data.code === 200) {
+        music.url = data?.data[0]?.url;
+        music.picUrl = music.al.picUrl;
+        music.song = { artists: [{ name: music.ar[0]?.name }] };
+        music.duration = music.dt / 1000;
+        music.lyric = lyric?.lrc?.lyric;
+        this.selectPlay({ music, musicId: music.id });
+      } else {
+        music.url = "";
+        this.selectPlay({ music, musicId: music.id });
+      }
+      console.log(music);
+    },
+    ...mapActions(["selectPlay"])
   },
   async created() {
     this.currentQueryId = this.$route.query.id;
@@ -152,13 +178,12 @@ export default {
     if (data.code === 200) {
       this.playlist = data?.playlist;
       this.trackIds = data?.playlist.trackIds.map((track) => track.id);
-    } else if(data){
+    } else if (data) {
       this.playlist = [];
       this.trackIds = [];
     }
   },
   async activated() {
-    
     if (this.$route.query.id !== this.currentQueryId) {
       this.currentQueryId = this.$route.query.id;
       let { data } = await playlistDetailAPI({ id: this.currentQueryId });

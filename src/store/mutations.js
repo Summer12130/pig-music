@@ -12,6 +12,9 @@ export default {
   userInfo(state, payload) {
     state.userInfo = payload;
   },
+  [types.SET_SINGER](state,singer){
+    state.singer = singer
+  },
   [types.SET_MUSIC](state, music) {
     state.music = music;
   },

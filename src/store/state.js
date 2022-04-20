@@ -10,4 +10,5 @@ export default {
   sequenceList: [],
   mode: playMode.sequence,
   currentIndex: -1,
+  singer:null
 }
