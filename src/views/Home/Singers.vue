@@ -19,6 +19,7 @@
       :finished="finished"
       finished-text="没有更多了"
       @load="onLoad"
+      v-if="!loadingData"
     >
       <van-cell-group inset>
         <van-cell
@@ -49,6 +50,9 @@
         </van-cell>
       </van-cell-group>
     </van-list>
+    <van-loading size="24px" vertical v-else class="loading-icon"
+      >加载中...</van-loading
+    >
   </div>
 </template>
 
@@ -70,6 +74,7 @@ export default {
     return {
       singersList: [],
       offset: 0,
+      loadingData: true,
       loading: false,
       finished: false,
       type: -1,
@@ -103,9 +108,12 @@ export default {
           (artist) =>
             !this.singersList.some((singer) => singer.id === artist.id)
         );
-        this.singersList = this.singersList.concat(data.artists);
+        this.singersList.push(...data.artists);
         this.offset++;
         this.loading = false;
+        setTimeout(() => {
+          this.loadingData = false;
+        }, 600);
       } else {
         this.finished = true;
       }
@@ -113,17 +121,20 @@ export default {
     typeChange(ntype) {
       this.offset = 0;
       this.type = ntype;
+      this.loadingData = true;
       this.onLoad(true);
     },
     areaChange(narea) {
       this.offset = 0;
       this.area = narea;
+      this.loadingData = true;
       this.onLoad(true);
     },
     toSingerDetail(singer) {
       console.log(singer);
       this.setNavLeftArrow(true);
       this.setSinger(singer);
+      this.setShowTabBar(false)
       this.$router.push({
         path: "/singer/detail",
         query: {
@@ -134,6 +145,7 @@ export default {
     ...mapMutations({
       setSinger: "SET_SINGER",
       setNavLeftArrow: "SET_NAV_LEFT_ARROW",
+      setShowTabBar:"SET_SHOW_TABBAR"
     }),
   },
   async created(flag = false) {
@@ -147,9 +159,12 @@ export default {
       data.artists = data.artists.filter(
         (artist) => !this.singersList.some((singer) => singer.id === artist.id)
       );
-      this.singersList = this.singersList.concat(data.artists);
+      this.singersList.push(...data.artists);
       this.offset++;
       this.loading = false;
+      setTimeout(() => {
+        this.loadingData = false;
+      }, 1000);
     } else {
       this.finished = true;
     }
@@ -177,6 +192,12 @@ export default {
   .ellipsis-icon {
     font-size: 0.18rem;
     line-height: inherit;
+  }
+  .loading-icon {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate3d(-50%, -50%, 0);
   }
 }
 </style>

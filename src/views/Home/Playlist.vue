@@ -69,6 +69,7 @@ export default {
     },
     toPlayList(id) {
       this.setNavLeftArrow(true);
+      this.setShowTabBar(false)
       this.$router.push({
         path: "/playlist",
         query: {
@@ -78,9 +79,11 @@ export default {
     },
     ...mapMutations({
       setNavLeftArrow: "SET_NAV_LEFT_ARROW",
+      setShowTabBar:"SET_SHOW_TABBAR"
     }),
   },
   async created() {
+    console.log(1);
     let { data } = await playlistTagsAPI();
     let { data: playListData } = await playlistDataAPI({ limit: 100 });
     if (data.code === 200) {
@@ -89,7 +92,7 @@ export default {
         this.playList = playListData.playlists;
         setTimeout(() => {
           this.loading = false;
-        }, 500);
+        }, 1500);
       } else {
         this.playList = [];
       }

@@ -198,14 +198,10 @@ export default {
     }),
   },
   async created() {
-    let { data } = await loginStatusAPI();
-    if (data.data.profile) {
-      this.setLoginStatus(true);
-      this.setUserInfo(data.data);
-      this.profile = data.data.profile;
+    if (this.isLogin) {
+      this.profile = this.userInfo.profile;
       this.setNavTitle(this.profile.nickname);
     } else {
-      this.setLoginStatus(false);
       Toast("请先登录!");
     }
   },

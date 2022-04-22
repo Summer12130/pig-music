@@ -28,11 +28,11 @@
       @toDJPage="toDJPage"
       class="home-router-view"
     >
-      <keep-alive>
-        <transition name="van-fade" mode="out-in">
+      <transition name="van-fade" mode="out-in">
+        <keep-alive>
           <component :is="Component" />
-        </transition>
-      </keep-alive>
+        </keep-alive>
+      </transition>
     </router-view>
   </div>
 </template>

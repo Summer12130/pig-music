@@ -38,6 +38,7 @@
 import { NavBar, Tabbar, TabbarItem, ConfigProvider } from "vant";
 import Player from "@/components/Player/Player";
 import { mapGetters, mapMutations } from "vuex";
+import { loginStatusAPI } from "@/services";
 export default {
   components: {
     [NavBar.name]: NavBar,
@@ -73,7 +74,18 @@ export default {
       setNavLeftArrow: "SET_NAV_LEFT_ARROW",
       setNavTitle: "SET_NAV_TITLE",
       setShowTabBar: "SET_SHOW_TABBAR",
+      setLoginStatus: "SET_LOGIN_STATUS",
+      setUserInfo: "SET_USER_INFO",
     }),
+  },
+  async created() {
+    let { data } = await loginStatusAPI();
+    if (data.data.profile) {
+      this.setLoginStatus(true);
+      this.setUserInfo(data.data);
+    } else {
+      this.setLoginStatus(false);
+    }
   },
   watch: {
     $route() {

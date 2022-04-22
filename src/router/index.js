@@ -94,19 +94,19 @@ const routes = [
   {
     path: "/playlist",
     name: "PlaylistDetail",
-    component:  ()=> import("@/views/Detail/PlaylistDetail.vue"),
-    meta:{
-      title: "歌单详情"
-    }
+    component: () => import("@/views/Detail/PlaylistDetail.vue"),
+    meta: {
+      title: "歌单详情",
+    },
   },
   {
-    path:"/singer/detail",
-    name:"SingerDetail",
-    component: ()=> import("@/views/Detail/SingersDetail"),
-    meta:{
-      title: "歌手详情"
-    }
-  }
+    path: "/singer/detail",
+    name: "SingerDetail",
+    component: () => import("@/views/Detail/SingersDetail"),
+    // meta: {
+    //   title: "歌手详情",
+    // },
+  },
 ];
 
 const router = createRouter({

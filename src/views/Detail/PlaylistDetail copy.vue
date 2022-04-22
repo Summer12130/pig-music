@@ -1,6 +1,6 @@
 <template>
   <div class="palylist-detail">
-    <div class="playlist-cover" :style="bgImageStyle" ref="bgImage">
+    <div class="playlist-cover">
       <van-card
         :desc="playlist.description"
         :title="playlist.name"
@@ -9,7 +9,6 @@
         description
         centered
         @click="showCreatorInfo"
-        class="playlist-card"
       >
         <template #tags class="tags-wrapper">
           <van-tag
@@ -30,12 +29,7 @@
         </template>
       </van-card>
     </div>
-    <scroll
-      :style="scrollStyle"
-      :probe-type="3"
-      @scroll="onScroll"
-      class="playlist-list"
-    >
+    <scroll>
       <div class="playlist-song-wrapper">
         <van-notice-bar
           color="#1989fa"
@@ -137,7 +131,6 @@ import { playlistDetailAPI, musicUrlAPI, musicLyricAPI } from "@/services";
 import { mapActions, mapGetters } from "vuex";
 import { Card, Divider, NoticeBar, Popup } from "vant";
 import Scroll from "../../components/common/Scroll/Scroll.vue";
-const RESERVED_HEIGHT = 0;
 export default {
   name: "PlaylistDetail",
   components: {
@@ -153,47 +146,13 @@ export default {
       trackIds: [],
       showCreator: false,
       currentQueryId: 0,
-      wrapperHeight: 0,
-      scrollY: 0,
-      maxTranslateY: 0,
     };
   },
   computed: {
     isFollowed() {
       return this.playlist?.creator?.followed ? "已关注" : "关注";
     },
-    bgImageStyle() {
-      const scrollY = this.scrollY;
-      let zIndex = 0;
-      let translateZ = 0;
-
-      if (scrollY > this.maxTranslateY) {
-        zIndex = 10;
-        translateZ = 1;
-      }
-
-      let scale = 1;
-      if (scrollY < 0) {
-        scale = 1 + Math.abs(scrollY / this.wrapperHeight);
-      }
-
-      return {
-        zIndex,
-        transform: `scale(${scale})translateZ(${translateZ}px)`,
-      };
-    },
-    scrollStyle() {
-      // const bottom = this.showList.length ? "0.50rem" : "0";
-      return {
-        top: `${this.wrapperHeight / 100 + 0.44}rem`,
-        // bottom,
-      };
-    },
     ...mapGetters(["isLogin"]),
-  },
-  mounted() {
-    this.wrapperHeight = this.$refs.bgImage.clientHeight;
-    this.maxTranslateY = this.wrapperHeight - RESERVED_HEIGHT;
   },
   methods: {
     showCreatorInfo() {
@@ -214,9 +173,6 @@ export default {
         this.selectPlay({ music, musicId: music.id });
       }
       console.log(music);
-    },
-    onScroll(pos) {
-      this.scrollY = -pos.y;
     },
     ...mapActions(["selectPlay"]),
   },
@@ -252,9 +208,6 @@ export default {
 <style lang="less" scoped>
 .palylist-detail {
   .playlist-cover {
-    position: relative;
-    width: 100%;
-    height: 100%;
     .tags-wrapper {
       .tag-item {
         margin-right: 0.05rem;
@@ -262,7 +215,7 @@ export default {
     }
     /deep/.van-card__footer {
       position: relative;
-      z-index: 9;
+      z-index: 10;
       display: flex;
       justify-content: center;
       font-size: 0.2rem;
@@ -277,20 +230,12 @@ export default {
       }
     }
   }
-  .playlist-list {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    z-index: 10;
-    background: rgb(247, 248, 249); /* fallback for old browsers */
-    padding: 0.1rem 0 0.2rem;
-    .playlist-song-wrapper {
-      .is-hot-tag {
-        margin: 0 0.1rem;
-      }
-      .play-circle-o-icon {
-        font-size: 0.18rem;
-      }
+  .playlist-song-wrapper {
+    .is-hot-tag {
+      margin: 0 0.1rem;
+    }
+    .play-circle-o-icon {
+      font-size: 0.18rem;
     }
   }
   .creator-info {

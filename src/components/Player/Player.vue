@@ -843,7 +843,7 @@ export default {
         transition: all 0.4s cubic-bezier(0.86, 0.18, 0.82, 1.32);
       }
     }
-    &.normal-enter,
+    &.normal-enter-from,
     &.normal-leave-to {
       opacity: 0;
       .top {
@@ -853,15 +853,9 @@ export default {
         transform: translate3d(0, 100px, 0);
       }
     }
-    &.normal-enter-from,
-    &.normal-leave {
-      opacity: 0;
-      .top {
-        transform: translate3d(0, -100px, 0);
-      }
-      .bottom {
-        transform: translate3d(0, 100px, 0);
-      }
+    &.normal-enter-to,
+    &.normal-leave-from {
+      opacity: 1;
     }
   }
   .mini-player {
@@ -878,13 +872,14 @@ export default {
     &.mini-leave-active {
       transition: all 0.4s;
     }
-    &.mini-enter,
+    &.mini-enter-from,
     &.mini-leave-to {
       opacity: 0;
+      transform: translate3d(0, 0.5rem, 0);
     }
-    &.mini-enter-from,
-    &.mini-leave {
-      opacity: 0;
+    &.mini-enter-to,
+    &.mini-leave-from {
+      opacity: 1;
     }
     .icon {
       flex: 0 0 40px;
