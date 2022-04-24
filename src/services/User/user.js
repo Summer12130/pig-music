@@ -12,5 +12,10 @@ const userDetailAPI = (params) =>
     params,
   });
 
+const userMomentsAPI = (params) =>
+  request({
+    url: "/user/event",
+    params,
+  });
 
-export { userPlaylistAPI, userDetailAPI };
+export { userPlaylistAPI, userDetailAPI, userMomentsAPI };

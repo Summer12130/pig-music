@@ -74,20 +74,24 @@ export default {
   },
   methods: {
     tabsChange(payload) {
-      this.$router.replace(payload);
+      this.$router.push(payload);
       this.currentPath = payload;
     },
     toMusicPage(payload) {
       this.active = payload;
+      this.currentPath = payload;
     },
     toAlbumsPage(payload) {
       this.active = payload;
+      this.currentPath = payload;
     },
     toProgramPage(payload) {
       this.active = payload;
+      this.currentPath = payload;
     },
     toDJPage(payload) {
       this.active = payload;
+      this.currentPath = payload;
     },
   },
   activated() {

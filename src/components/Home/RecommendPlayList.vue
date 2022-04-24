@@ -5,7 +5,6 @@
       icon="music"
       is-link
       to="/home/playlist"
-      replace
       @click="toPlayList"
     />
     <van-row justify="space-around">

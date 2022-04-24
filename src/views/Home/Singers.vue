@@ -113,7 +113,7 @@ export default {
         this.loading = false;
         setTimeout(() => {
           this.loadingData = false;
-        }, 600);
+        }, 500);
       } else {
         this.finished = true;
       }

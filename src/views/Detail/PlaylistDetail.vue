@@ -30,11 +30,13 @@
         </template>
       </van-card>
     </div>
+
     <scroll
       :style="scrollStyle"
       :probe-type="3"
       @scroll="onScroll"
       class="playlist-list"
+      v-if="!loading"
     >
       <div class="playlist-song-wrapper">
         <van-notice-bar
@@ -42,6 +44,7 @@
           background="#ecf9ff"
           left-icon="info-o"
           v-if="!isLogin"
+          mode="closeable"
         >
           登陆后加载更多哦！
         </van-notice-bar>
@@ -69,6 +72,10 @@
         </van-cell-group>
       </div>
     </scroll>
+
+    <van-loading size="24px" vertical v-else class="loading-icon"
+      >加载中...</van-loading
+    >
     <van-popup
       v-model:show="showCreator"
       round
@@ -156,6 +163,7 @@ export default {
       wrapperHeight: 0,
       scrollY: 0,
       maxTranslateY: 0,
+      loading: true,
     };
   },
   computed: {
@@ -192,7 +200,7 @@ export default {
     ...mapGetters(["isLogin"]),
   },
   mounted() {
-    this.wrapperHeight = this.$refs.bgImage.clientHeight;
+    this.wrapperHeight = this.$refs?.bgImage?.clientHeight;
     this.maxTranslateY = this.wrapperHeight - RESERVED_HEIGHT;
   },
   methods: {
@@ -220,19 +228,21 @@ export default {
     },
     ...mapActions(["selectPlay"]),
   },
-  async created() {
-    this.currentQueryId = this.$route.query.id;
-    let { data } = await playlistDetailAPI({ id: this.currentQueryId });
-    console.log(data);
-    if (data.code === 200) {
-      this.playlist = data?.playlist;
-      this.trackIds = data?.playlist.trackIds.map((track) => track.id);
-    } else if (data) {
-      this.playlist = [];
-      this.trackIds = [];
-    }
-  },
+  // async created() {
+  //   this.currentQueryId = this.$route.query.id;
+  //   let { data } = await playlistDetailAPI({ id: this.currentQueryId });
+  //   console.log(data);
+  //   if (data.code === 200) {
+  //     this.playlist = data?.playlist;
+  //     this.trackIds = data?.playlist.trackIds.map((track) => track.id);
+
+  //   } else if (data) {
+  //     this.playlist = {};
+  //     this.trackIds = [];
+  //   }
+  // },
   async activated() {
+    this.loading = true;
     if (this.$route.query.id !== this.currentQueryId) {
       this.currentQueryId = this.$route.query.id;
       let { data } = await playlistDetailAPI({ id: this.currentQueryId });
@@ -240,12 +250,18 @@ export default {
       if (data.code === 200) {
         this.playlist = data?.playlist;
         this.trackIds = data?.playlist.trackIds.map((track) => track.id);
+        setTimeout(() => {
+          this.loading = false;
+        }, 300);
       } else {
-        this.playlist = [];
+        this.playlist = {};
         this.trackIds = [];
       }
+    } else {
+      this.loading = false;
     }
   },
+  deactivated() {},
 };
 </script>
 
@@ -324,6 +340,12 @@ export default {
         }
       }
     }
+  }
+  .loading-icon {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate3d(-50%, -50%, 0);
   }
 }
 </style>

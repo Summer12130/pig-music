@@ -15,14 +15,30 @@
         {{ profile.nickname }}
       </template>
     </van-cell>
-    <van-grid :column-num="3">
-      <van-grid-item
-        v-for="value in 6"
-        :key="value"
-        icon="photo-o"
-        text="文字"
-      />
-    </van-grid>
+    <div v-if="isLogin">
+      <van-grid :column-num="3">
+        <van-grid-item
+          v-for="item in gridItems"
+          :key="item.text"
+          :icon="item.icon"
+          :text="item.text"
+        />
+      </van-grid>
+      <van-tabs v-model:activeTab="activeTab">
+        <van-tab title="动态">
+          <user-moments></user-moments>
+        </van-tab>
+        <van-tab title="播客">
+          <user-podcasting></user-podcasting>
+        </van-tab>
+      </van-tabs>
+    </div>
+    <div v-else>
+      <van-empty image-size="100" description="登录查看更多" v-if="!loading" />
+      <van-loading size="24px" vertical v-else class="loading-icon"
+        >登陆中...</van-loading
+      >
+    </div>
     <!-- 登录逻辑 -->
     <van-popup
       v-model:show="toLogin"
@@ -103,8 +119,11 @@ import {
   userAccountAPI,
   loginStatusAPI,
 } from "@/services";
-import { Popup, Toast, Form, Field, Tabs, Tab } from "vant";
+import { Popup, Toast, Form, Field, Tabs, Tab, Empty } from "vant";
+import UserMoments from "@/components/User/UserMoments";
+import UserPodcasting from "@/components/User/UserPodcasting";
 import { mapGetters, mapMutations } from "vuex";
+
 export default {
   name: "User",
   components: {
@@ -113,6 +132,9 @@ export default {
     [Field.name]: Field,
     [Tabs.name]: Tabs,
     [Tab.name]: Tab,
+    [Empty.name]: Empty,
+    UserMoments,
+    UserPodcasting,
   },
   data() {
     return {
@@ -120,8 +142,15 @@ export default {
       phoneNumber: "",
       password: "",
       sms: "",
+      activeTab: 0,
       active: 0,
+      loading: false,
       profile: { username: "请登录", avatar: "" },
+      gridItems: [
+        { icon: "gem", text: "喜爱音乐" },
+        { icon: "gem", text: "私人FM" },
+        { icon: "gem", text: "播放记录" },
+      ],
     };
   },
   computed: {
@@ -143,6 +172,7 @@ export default {
       }
     },
     async onSubmit() {
+      this.loading = true;
       let { data } = await cellphoneLoginAPI({
         phone: this.phoneNumber,
         password: this.password,
@@ -154,6 +184,9 @@ export default {
           this.setUserInfo(data);
           this.profile = data.profile;
           this.setNavTitle(this.profile.nickname);
+          setTimeout(() => {
+            this.loading = false;
+          }, 1500);
         }
         Toast("登陆成功");
         this.toLogin = false;
@@ -172,6 +205,7 @@ export default {
       console.log(data);
     },
     async onVerify() {
+      this.loading = true;
       let { data } = await verifySMSAPI({
         phone: this.phoneNumber,
         captcha: this.sms,
@@ -183,6 +217,9 @@ export default {
           this.setUserInfo(data.data);
           this.profile = data.data.profile;
         }
+        setTimeout(() => {
+          this.loading = false;
+        }, 1500);
         Toast("登陆成功");
         this.toLogin = false;
       } else {
@@ -198,27 +235,24 @@ export default {
     }),
   },
   async created() {
+    if (!this.isLogin) {
+      let { data } = await loginStatusAPI();
+      if (data.data.profile) {
+        this.setLoginStatus(true);
+        this.setUserInfo(data.data);
+        this.profile = this.userInfo.profile;
+        this.setNavTitle(this.profile.nickname);
+      } else {
+        this.setLoginStatus(false);
+      }
+    }
+  },
+  activated() {
     if (this.isLogin) {
       this.profile = this.userInfo.profile;
       this.setNavTitle(this.profile.nickname);
-    } else {
-      Toast("请先登录!");
     }
-  },
-  async activated() {
-    // 已经登录但没有用户数据
-
-    this.profile.nickname && this.setNavTitle(this.profile.nickname);
-    if (!this.userInfo && this.isLogin) {
-      let { data } = await userAccountAPI();
-      if (data.code === 200 && data.profile) {
-        console.log("请求用户数据");
-        this.setLoginStatus(true);
-        this.setUserInfo(data);
-      } else {
-        Toast("拉取用户信息失败!");
-      }
-    }
+    console.log(this.userInfo);
   },
 };
 </script>
@@ -231,6 +265,13 @@ export default {
     font-size: 0.14rem;
     font-weight: 900;
     margin-left: 0.2rem;
+  }
+
+  .loading-icon {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate3d(-50%, -50%, 0);
   }
 }
 </style>

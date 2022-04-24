@@ -62,13 +62,11 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["showLeftArrow", "navTitle", "showTabBar"]),
+    ...mapGetters(["showLeftArrow", "navTitle", "showTabBar", "isLogin"]),
   },
   methods: {
     onClickLeft() {
       this.$router.back();
-      this.setNavLeftArrow(false);
-      this.setShowTabBar(true);
     },
     ...mapMutations({
       setNavLeftArrow: "SET_NAV_LEFT_ARROW",
@@ -79,17 +77,28 @@ export default {
     }),
   },
   async created() {
-    let { data } = await loginStatusAPI();
-    if (data.data.profile) {
-      this.setLoginStatus(true);
-      this.setUserInfo(data.data);
-    } else {
-      this.setLoginStatus(false);
+    if (!this.isLogin) {
+      let { data } = await loginStatusAPI();
+      if (data.data.profile) {
+        this.setLoginStatus(true);
+        this.setUserInfo(data.data);
+      } else {
+        this.setLoginStatus(false);
+      }
     }
   },
   watch: {
     $route() {
+      const path = this.$route.path;
       this.setNavTitle(this.$route.meta.title);
+      if (
+        path.includes("/home") ||
+        path.includes("/search") ||
+        path === "/user"
+      ) {
+        this.setNavLeftArrow(false);
+        this.setShowTabBar(true);
+      }
     },
   },
 };

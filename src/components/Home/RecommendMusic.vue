@@ -5,7 +5,6 @@
       icon="music"
       is-link
       to="/home/music"
-      replace
       @click="toMusic"
     />
     <van-cell-group inset>

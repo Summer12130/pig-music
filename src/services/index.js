@@ -46,7 +46,7 @@ export { singerDetailAPI } from "./Detail/singers";
 // User页面接口
 
 // UserProfile
-export { userPlaylistAPI, userDetailAPI } from "./User/user";
+export { userPlaylistAPI, userDetailAPI, userMomentsAPI } from "./User/user";
 
 // Login
 export {

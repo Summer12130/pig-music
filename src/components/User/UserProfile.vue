@@ -1,6 +1,6 @@
 <template>
   <div class="user-profile">
-    <van-cell-group inset>
+    <van-cell-group inset class="baseinfo">
       <van-cell
         title="基本信息"
         size="large"
@@ -14,7 +14,7 @@
       />
     </van-cell-group>
 
-    <van-cell-group inset>
+    <van-cell-group inset class="create-playlists">
       <van-cell
         title="创建歌单"
         size="large"
@@ -29,7 +29,7 @@
       />
     </van-cell-group>
 
-    <van-cell-group inset>
+    <van-cell-group inset class="favor-playlists">
       <van-cell
         title="收藏歌单"
         size="large"
@@ -126,4 +126,13 @@ export default {
 };
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+.user-profile {
+  .baseinfo {
+    margin-bottom: 0.1rem;
+  }
+  .create-playlists {
+    margin-bottom: 0.1rem;
+  }
+}
+</style>

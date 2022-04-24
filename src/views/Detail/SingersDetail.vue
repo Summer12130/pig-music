@@ -8,6 +8,7 @@
       :probe-type="3"
       @scroll="onScroll"
       class="music-list"
+      v-if="!loading"
     >
       <div class="music-list-wrapper">
         <van-cell-group inset>
@@ -32,6 +33,9 @@
         </van-cell-group>
       </div>
     </scroll>
+    <van-loading size="24px" vertical v-else class="loading-icon"
+      >加载中...</van-loading
+    >
   </div>
 </template>
 
@@ -56,6 +60,7 @@ export default {
     return {
       currentId: null,
       showList: [],
+      loading: true,
       imageHeight: 0,
       scrollY: 0,
       maxTranslateY: 0,
@@ -123,11 +128,17 @@ export default {
       let { data } = await singerDetailAPI({ id });
       if (data.code === 200) {
         this.showList = data.songs;
+        setTimeout(() => {
+          this.loading = false;
+        }, 300);
       }
     }
   },
+  deactivated() {
+    this.loading = true;
+  },
   mounted() {
-    this.imageHeight = this.$refs.bgImage.clientHeight;
+    this.imageHeight = this.$refs?.bgImage?.clientHeight;
     this.maxTranslateY = this.imageHeight - RESERVED_HEIGHT;
   },
   methods: {
@@ -183,7 +194,7 @@ export default {
     z-index: 0;
     .music-list-wrapper {
       padding: 0.1rem 0 0.2rem;
-      background: rgb(247,248,249); /* fallback for old browsers */
+      background: rgb(247, 248, 249); /* fallback for old browsers */
       // background: #ece9e6; /* fallback for old browsers */
       // background: -webkit-linear-gradient(
       //   to bottom,
@@ -196,6 +207,12 @@ export default {
       //   #ece9e6
       // ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
     }
+  }
+  .loading-icon {
+    position: fixed;
+    top: 70%;
+    left: 50%;
+    transform: translate3d(-50%, -50%, 0);
   }
 }
 </style>

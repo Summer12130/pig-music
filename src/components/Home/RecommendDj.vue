@@ -5,7 +5,6 @@
       icon="music"
       is-link
       to="/home/dj"
-      replace
       @click="toDJPage"
     />
     <van-row justify="space-around">

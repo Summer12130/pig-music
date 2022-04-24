@@ -203,6 +203,9 @@ export default {
       this.hots = [];
     }
   },
+  deactivated() {
+    this.keywords = "";
+  },
   watch: {
     keywords(nVal) {
       if (!nVal.length) {

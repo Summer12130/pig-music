@@ -83,7 +83,6 @@ export default {
     }),
   },
   async created() {
-    console.log(1);
     let { data } = await playlistTagsAPI();
     let { data: playListData } = await playlistDataAPI({ limit: 100 });
     if (data.code === 200) {
@@ -92,7 +91,7 @@ export default {
         this.playList = playListData.playlists;
         setTimeout(() => {
           this.loading = false;
-        }, 1500);
+        }, 500);
       } else {
         this.playList = [];
       }

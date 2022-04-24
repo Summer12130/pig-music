@@ -77,20 +77,20 @@
           </div>
           <div class="operators">
             <div class="icon i-left" @click="changeMode">
-              <van-icon name="circle" />
+              <van-icon :name="modeIcon" />
             </div>
-            <div class="icon i-left">
-              <van-icon name="arrow-left" />
+            <div class="icon i-left" :class="disableCls">
+              <van-icon name="arrow-left" @click="prev" />
             </div>
-            <div class="icon i-center">
+            <div class="icon i-center" :class="disableCls">
               <van-icon
                 :name="playIcon"
                 @click="togglePlaying"
                 :class="playCls"
               />
             </div>
-            <div class="icon i-right">
-              <van-icon name="arrow" />
+            <div class="icon i-right" :class="disableCls">
+              <van-icon name="arrow" @click="next" />
             </div>
             <div class="icon i-right">
               <van-icon name="like-o" @click="clickLikeMusic" />
@@ -198,7 +198,14 @@
         </div>
       </div>
     </transition>
-    <audio ref="audio" :src="music.url" @timeupdate="updateTime"></audio>
+    <audio
+      ref="audio"
+      :src="music.url"
+      @timeupdate="updateTime"
+      @canplay="ready"
+      @error="error"
+      @ended="end"
+    ></audio>
   </div>
 </template>
 
@@ -212,6 +219,7 @@ import ProgressCircle from "@/components/Player/ProgressCircle";
 import BScroll from "@/components/common/Scroll/BScroll";
 import { List, Popup, Toast } from "vant";
 import { musicCommentAPI, likeMusicAPI } from "@/services";
+import { playMode } from "@/utils/config";
 const transform = prefixStyle("transform");
 const transitionDuration = prefixStyle("transitionDuration");
 export default {
@@ -227,6 +235,7 @@ export default {
     return {
       currentTime: 0,
       radius: 32,
+      songReady: false,
       currentLyric: null,
       playingLyric: "",
       currentLineNum: 0,
@@ -256,10 +265,27 @@ export default {
     cdCls() {
       return this.playing ? "play" : "play pause";
     },
+    modeIcon() {
+      return this.mode === playMode.sequence
+        ? "exchange"
+        : this.mode === playMode.loop
+        ? "replay"
+        : "bulb-o";
+    },
     percent() {
       return this.currentTime / this.music.duration;
     },
-    ...mapGetters(["fullScreen", "playlist", "music", "playing", "showPlayer"]),
+    disableCls() {
+      return this.songReady ? "" : "disable";
+    },
+    ...mapGetters([
+      "fullScreen",
+      "playlist",
+      "music",
+      "playing",
+      "showPlayer",
+      "mode",
+    ]),
   },
   methods: {
     back() {
@@ -444,6 +470,7 @@ export default {
       };
     },
     togglePlaying() {
+      if (!this.songReady) return;
       this.setPlayingState(!this.playing);
       if (this.currentLyric) {
         this.currentLyric.togglePlay();
@@ -478,6 +505,43 @@ export default {
       console.log(1111);
     },
     clickLikeMusic() {},
+    changeMode() {
+      const mode = (this.mode + 1) % 2;
+      this.setPlayMode(mode);
+    },
+    prev() {
+      if (!this.songReady) return;
+      let index = this.playlist.indexOf(this.music);
+      index--;
+      if (index < 0) index = this.playlist.length - 1;
+      this.setMusic(this.playlist[index]);
+      if (this.playlist.length > 1) this.songReady = false;
+    },
+    next() {
+      if (!this.songReady) return;
+      let index = this.playlist.indexOf(this.music);
+      index++;
+      if (index > this.playlist.length - 1) index = 0;
+      this.setMusic(this.playlist[index]);
+      if (this.playlist.length > 1) this.songReady = false;
+    },
+    ready() {
+      this.songReady = true;
+    },
+    error() {
+      this.songReady = true;
+    },
+    end() {
+      if (this.mode === playMode.loop) {
+        this.loop();
+      } else {
+        this.next();
+      }
+    },
+    loop() {
+      this.$refs.audio.currentTime = 0;
+      this.$refs.audio.play();
+    },
     async onLoadComment() {
       let { data } = await musicCommentAPI({
         id: this.music.id,
@@ -494,6 +558,7 @@ export default {
     toUserPage(user) {
       this.setNavLeftArrow(true);
       this.setPlayerStatus(false);
+      this.setShowTabBar(false);
       this.showPopover = false;
       this.showComments = false;
       this.showPlayLists = false;
@@ -512,6 +577,8 @@ export default {
       setPlayerStatus: "SET_PLAYER_STATUS",
       setMusic: "SET_MUSIC",
       setNavLeftArrow: "SET_NAV_LEFT_ARROW",
+      setShowTabBar: "SET_SHOW_TABBAR",
+      setPlayMode: "SET_PLAY_MODE",
     }),
   },
   created() {
