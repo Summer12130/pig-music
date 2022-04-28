@@ -121,6 +121,7 @@ export default {
     console.log("singers created");
   },
   async activated() {
+    this.loading = true;
     const id = this.$route.query.id;
     this.setNavTitle(this.singer.name);
     if (this.currentId !== id) {
@@ -134,9 +135,7 @@ export default {
       }
     }
   },
-  deactivated() {
-    this.loading = true;
-  },
+  deactivated() {},
   mounted() {
     this.imageHeight = this.$refs?.bgImage?.clientHeight;
     this.maxTranslateY = this.imageHeight - RESERVED_HEIGHT;

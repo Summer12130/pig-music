@@ -60,3 +60,7 @@ export {
 // Song 接口
 
 export { likeMusicAPI, musicCommentAPI } from "./Song/song";
+
+// Moment 接口
+
+export { getMomentListsAPI, postMomentAPI } from "./Community/moment";

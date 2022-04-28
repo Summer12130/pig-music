@@ -9,7 +9,12 @@
         @click-left="onClickLeft"
       />
 
-      <router-view v-slot="{ Component }" class="main-content" :path="path">
+      <router-view
+        v-slot="{ Component }"
+        class="main-content"
+        :path="path"
+        @changeCurrentPath="changeCurrentPath"
+      >
         <transition name="fade" mode="out-in" appear>
           <keep-alive>
             <component :is="Component" />
@@ -18,13 +23,15 @@
       </router-view>
 
       <van-tabbar v-model="active" route v-show="showTabBar">
-        <van-tabbar-item replace to="/home" icon="home-o">首页</van-tabbar-item>
+        <van-tabbar-item replace :to="currentPath" icon="home-o"
+          >首页</van-tabbar-item
+        >
+        <van-tabbar-item replace to="/community" icon="chat-o"
+          >社区</van-tabbar-item
+        >
         <van-tabbar-item replace to="/search" icon="search"
           >搜索</van-tabbar-item
         >
-        <!-- <van-tabbar-item replace to="/community" icon="chat-o"
-          >社区</van-tabbar-item
-        > -->
         <van-tabbar-item replace to="/user" icon="contact"
           >我的</van-tabbar-item
         >
@@ -52,6 +59,7 @@ export default {
       title: "首页",
       active: "home",
       path: "/home/recommend",
+      currentPath: "/home/recommend",
       themeVars: {
         navBarTextColor: "#FFB4A2",
         navBarBackgroundColor: "#FFB4A2",
@@ -67,6 +75,9 @@ export default {
   methods: {
     onClickLeft() {
       this.$router.back();
+    },
+    changeCurrentPath(path) {
+      this.currentPath = path;
     },
     ...mapMutations({
       setNavLeftArrow: "SET_NAV_LEFT_ARROW",

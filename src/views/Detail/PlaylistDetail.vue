@@ -180,14 +180,14 @@ export default {
         translateZ = 1;
       }
 
-      let scale = 1;
-      if (scrollY < 0) {
-        scale = 1 + Math.abs(scrollY / this.wrapperHeight);
-      }
+      // let scale = 1;
+      // if (scrollY < 0) {
+      //   scale = 1 + Math.abs(scrollY / this.wrapperHeight);
+      // }
 
       return {
         zIndex,
-        transform: `scale(${scale})translateZ(${translateZ}px)`,
+        // transform: `scale(${scale})translateZ(${translateZ}px)`,
       };
     },
     scrollStyle() {
@@ -282,12 +282,12 @@ export default {
       display: flex;
       justify-content: center;
       font-size: 0.2rem;
-      padding: 0.2rem;
+      padding: 0.2rem 0;
       // transform: translateY(70%);
       .playlist-info {
         display: flex;
         justify-content: space-around;
-        width: 80%;
+        width: 95%;
         border: 1px solid #333;
         border-radius: 0.15rem;
       }

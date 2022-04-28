@@ -1,44 +1,52 @@
 <template>
   <div class="user">
-    <van-cell center value-class="user-username" is-link @click="login">
-      <!-- 登录后 -->
-      <template #title>
-        <van-image
-          height="100"
-          width="100"
-          round
-          :src="profile.avatarUrl"
-        ></van-image>
-      </template>
+    <scroll class="scroll-wrapper">
+      <div class="scroll-content">
+        <van-cell center value-class="user-username" is-link @click="login">
+          <!-- 登录后 -->
+          <template #title>
+            <van-image
+              height="100"
+              width="100"
+              round
+              :src="profile.avatarUrl"
+            ></van-image>
+          </template>
 
-      <template #value>
-        {{ profile.nickname }}
-      </template>
-    </van-cell>
-    <div v-if="isLogin">
-      <van-grid :column-num="3">
-        <van-grid-item
-          v-for="item in gridItems"
-          :key="item.text"
-          :icon="item.icon"
-          :text="item.text"
-        />
-      </van-grid>
-      <van-tabs v-model:activeTab="activeTab">
-        <van-tab title="动态">
-          <user-moments></user-moments>
-        </van-tab>
-        <van-tab title="播客">
-          <user-podcasting></user-podcasting>
-        </van-tab>
-      </van-tabs>
-    </div>
-    <div v-else>
-      <van-empty image-size="100" description="登录查看更多" v-if="!loading" />
-      <van-loading size="24px" vertical v-else class="loading-icon"
-        >登陆中...</van-loading
-      >
-    </div>
+          <template #value>
+            {{ profile.nickname }}
+          </template>
+        </van-cell>
+        <div v-if="isLogin">
+          <van-grid :column-num="3">
+            <van-grid-item
+              v-for="item in gridItems"
+              :key="item.text"
+              :icon="item.icon"
+              :text="item.text"
+            />
+          </van-grid>
+          <van-tabs v-model:activeTab="activeTab">
+            <van-tab title="动态">
+              <user-moments></user-moments>
+            </van-tab>
+            <van-tab title="播客">
+              <user-podcasting></user-podcasting>
+            </van-tab>
+          </van-tabs>
+        </div>
+        <div v-else>
+          <van-empty
+            image-size="100"
+            description="登录查看更多"
+            v-if="!loading"
+          />
+          <van-loading size="24px" vertical v-else class="loading-icon"
+            >登陆中...</van-loading
+          >
+        </div>
+      </div>
+    </scroll>
     <!-- 登录逻辑 -->
     <van-popup
       v-model:show="toLogin"
@@ -123,7 +131,7 @@ import { Popup, Toast, Form, Field, Tabs, Tab, Empty } from "vant";
 import UserMoments from "@/components/User/UserMoments";
 import UserPodcasting from "@/components/User/UserPodcasting";
 import { mapGetters, mapMutations } from "vuex";
-
+import Scroll from "@/components/common/Scroll/Scroll";
 export default {
   name: "User",
   components: {
@@ -135,6 +143,7 @@ export default {
     [Empty.name]: Empty,
     UserMoments,
     UserPodcasting,
+    Scroll,
   },
   data() {
     return {
@@ -259,6 +268,10 @@ export default {
 
 <style lang="less" scoped>
 .user {
+  .scroll-wrapper {
+    height: 5.71rem;
+    min-height: 5.71rem;
+  }
   /deep/.user-username {
     flex: 3;
     text-align: left;

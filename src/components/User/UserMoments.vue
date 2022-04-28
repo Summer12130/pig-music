@@ -26,7 +26,9 @@
           <div class="music-sharing">
             <div class="music-poster">
               <van-image
-                :src="event.json.song.img80x80 || event.json.song.xInfo.img80x80"
+                :src="
+                  event.json.song.img80x80 || event.json.song.xInfo.img80x80
+                "
                 lazy-load
                 width="80"
                 height="80"
@@ -71,7 +73,6 @@ export default {
     events() {
       return this.moments?.events?.map((moment) => {
         moment.json = JSON.parse(moment.json);
-        console.log(moment);
         return moment;
       });
     },
@@ -117,9 +118,7 @@ export default {
       }
     }
   },
-  activated() {
-    console.log("moment");
-  },
+  activated() {},
 };
 </script>
 

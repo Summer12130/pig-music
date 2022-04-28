@@ -21,6 +21,7 @@ import {
   Toast,
   Loading,
   Button,
+  List,
 } from "vant";
 import BScroll from "@/components/common/Scroll/Scroll";
 createApp(App)
@@ -37,6 +38,7 @@ createApp(App)
   .use(Toast)
   .use(Loading)
   .use(Button)
+  .use(List)
   .component("BScroll", BScroll)
   .use(store)
   .use(router)

@@ -1,7 +1,16 @@
 <template>
   <div class="rank">
-    <recommend-rank :recommend-rank-list="recommendRankList" title="推荐榜单" icon="gem"></recommend-rank>
-    <recommend-rank :recommend-rank-list="otherRankList" title="其它榜单" icon="fire"></recommend-rank>
+    <recommend-rank
+      :recommend-rank-list="recommendRankList"
+      title="推荐榜单"
+      icon="gem"
+      @toRankDetail="toRankDetail"
+    ></recommend-rank>
+    <recommend-rank
+      :recommend-rank-list="otherRankList"
+      title="其它榜单"
+      icon="fire"
+    ></recommend-rank>
   </div>
 </template>
 
@@ -22,11 +31,21 @@ export default {
     recommendRankList() {
       return this.allRankList.slice(0, 3);
     },
-    otherRankList(){
-      return this.allRankList.slice(3)
+    otherRankList() {
+      return this.allRankList.slice(3);
+    },
+  },
+  methods: {
+    toRankDetail(item){
+      this.$router.push({
+        path:"/playlist",
+        query:{
+          id: item.id
+        }
+      })
+      console.log(item);
     }
   },
-  methods: {},
   async created() {
     let { data } = await allRankListAPI();
     if (data.code === 200) {

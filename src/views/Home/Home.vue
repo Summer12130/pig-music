@@ -51,7 +51,6 @@ export default {
   data() {
     return {
       active: "",
-      homeTitle: "新歌榜",
       homeLists: [],
       recommendData: {},
       currentPath: "",
@@ -76,6 +75,7 @@ export default {
     tabsChange(payload) {
       this.$router.push(payload);
       this.currentPath = payload;
+      this.$emit("changeCurrentPath", payload)
     },
     toMusicPage(payload) {
       this.active = payload;
