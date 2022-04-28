@@ -1,4 +1,4 @@
-import { request } from "../request";
+import { request, request1 } from "../request";
 
 const cellphoneLoginAPI = (params) =>
   request({
@@ -30,10 +30,17 @@ const loginStatusAPI = () =>
     url: "/login/status",
   });
 
+const createUserAPI = (data) =>
+  request1({
+    url: "/user",
+    method: "POST",
+    data
+  });
 export {
   cellphoneLoginAPI,
   sentSMSAPI,
   verifySMSAPI,
   userAccountAPI,
   loginStatusAPI,
+  createUserAPI
 };

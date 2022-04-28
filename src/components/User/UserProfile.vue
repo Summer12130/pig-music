@@ -49,6 +49,7 @@
 <script>
 import { userPlaylistAPI } from "@/services";
 import formatCity from "@/utils/formatCity";
+import { mapMutations } from 'vuex';
 export default {
   name: "UserProfile",
   props: {
@@ -104,7 +105,7 @@ export default {
   },
   methods: {
     toPlayListDetail(id) {
-      this.$store.commit("showNavBarLeftIcon", true);
+      this.setNavLeftArrow(true)
       this.$router.push({
         path: "/playlist",
         query: {
@@ -112,6 +113,9 @@ export default {
         },
       });
     },
+    ...mapMutations({
+      setNavLeftArrow:"SET_NAV_LEFT_ARROW"
+    })
   },
   async created() {
     const uid = this.$route.query.uid;

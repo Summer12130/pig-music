@@ -2,53 +2,80 @@
   <div class="user-moment">
     <ul class="moment-list">
       <li class="moment-item" v-for="event in events" :key="event.uuid">
-        <div class="header">
-          <div class="avatar">
-            <van-image
-              width="30"
-              height="30"
-              center
-              :src="event.user.avatarUrl"
-            ></van-image>
-          </div>
-          <div class="user-time">
-            <p class="nickname">
-              {{ event.user.nickname }}
-              <span>{{ formatType(event.type) }}</span>
-            </p>
-            <p class="time">{{ formatMomentTime(event.eventTime) }}</p>
-          </div>
-        </div>
-        <div class="content">
-          <div class="user-comment">
-            {{ event.json.msg }}
-          </div>
-          <div class="music-sharing">
-            <div class="music-poster">
+        <template v-if="event.type === 18">
+          <div class="header">
+            <div class="avatar">
               <van-image
-                :src="
-                  event.json.song.img80x80 || event.json.song.xInfo.img80x80
-                "
-                lazy-load
-                width="80"
-                height="80"
+                width="30"
+                height="30"
+                center
+                :src="event.user.avatarUrl"
               ></van-image>
             </div>
-            <div class="singer">
-              <p class="music-name">{{ event.json.song.name }}</p>
-              <p class="singer-name">{{ event.json.song.artists[0].name }}</p>
+            <div class="user-time">
+              <p class="nickname">
+                {{ event.user.nickname }}
+                <span>{{ formatType(event.type) }}</span>
+              </p>
+              <p class="time">{{ formatMomentTime(event.eventTime) }}</p>
             </div>
           </div>
-        </div>
-        <van-divider
-          :style="{
-            color: '#969799',
-            borderColor: '#969799',
-            padding: '0 16px',
-          }"
-        >
-          <van-icon name="guide-o" />
-        </van-divider>
+          <div class="content">
+            <div class="user-comment">
+              {{ event.json.msg }}
+            </div>
+            <div class="music-sharing">
+              <div class="music-poster">
+                <van-image
+                  :src="
+                    event.json.song.img80x80 || event.json.song.xInfo.img80x80
+                  "
+                  lazy-load
+                  width="80"
+                  height="80"
+                ></van-image>
+              </div>
+              <div class="singer">
+                <p class="music-name">{{ event.json.song.name }}</p>
+                <p class="singer-name">{{ event.json.song.artists[0].name }}</p>
+              </div>
+            </div>
+          </div>
+          <van-divider
+            :style="{
+              color: '#969799',
+              borderColor: '#969799',
+              padding: '0 16px',
+            }"
+          >
+            <van-icon name="guide-o" />
+          </van-divider>
+        </template>
+        <template v-else-if="event.type === 35">
+          <div class="header">
+            <div class="avatar">
+              <van-image
+                width="30"
+                height="30"
+                center
+                :src="event.user.avatarUrl"
+              ></van-image>
+            </div>
+            <div class="user-time">
+              <p class="nickname">
+                {{ event.user.nickname }}
+                <span>{{ formatType(event.type) }}</span>
+              </p>
+              <p class="time">{{ formatMomentTime(event.eventTime) }}</p>
+            </div>
+          </div>
+          <div class="content">
+            <div class="user-comment">
+              {{ event.json.msg }}
+            </div>
+            <van-image :src="event.pics[0]?.originUrl"></van-image>
+          </div>
+        </template>
       </li>
     </ul>
   </div>
@@ -94,9 +121,8 @@ export default {
           return "转发";
         case 39:
           return "发布视频";
-
         case 35 || 13:
-          return "分享歌单";
+          return "分享动态";
         case 24:
           return "分享专栏文章";
         case 41 || 21:

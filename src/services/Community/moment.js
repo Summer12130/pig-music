@@ -10,9 +10,7 @@ const postMomentAPI = (data) =>
   request1({
     url: "/moment",
     method: "POST",
-    data: {
-      ...data,
-    },
+    data
   });
 
 export { getMomentListsAPI, postMomentAPI };

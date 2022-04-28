@@ -126,6 +126,7 @@ import {
   verifySMSAPI,
   userAccountAPI,
   loginStatusAPI,
+  createUserAPI,
 } from "@/services";
 import { Popup, Toast, Form, Field, Tabs, Tab, Empty } from "vant";
 import UserMoments from "@/components/User/UserMoments";
@@ -193,6 +194,15 @@ export default {
           this.setUserInfo(data);
           this.profile = data.profile;
           this.setNavTitle(this.profile.nickname);
+          // 创建用户
+          let result = await createUserAPI({
+            id: this.profile.userId,
+            nickname: this.profile.nickname,
+            phone: this.phoneNumber,
+            city: this.profile.city,
+            avatarUrl: this.profile.avatarUrl,
+            signature: this.profile.signature,
+          });
           setTimeout(() => {
             this.loading = false;
           }, 1500);

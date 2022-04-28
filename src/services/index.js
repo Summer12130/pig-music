@@ -55,6 +55,7 @@ export {
   verifySMSAPI,
   userAccountAPI,
   loginStatusAPI,
+  createUserAPI,
 } from "./User/login";
 
 // Song 接口
@@ -63,4 +64,11 @@ export { likeMusicAPI, musicCommentAPI } from "./Song/song";
 
 // Moment 接口
 
+// Moment相关
 export { getMomentListsAPI, postMomentAPI } from "./Community/moment";
+// Comment 相关
+export {
+  postCommentAPI,
+  replyCommentAPI,
+  getCommentListAPI,
+} from "./Community/comment";
