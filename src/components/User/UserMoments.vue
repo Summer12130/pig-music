@@ -23,6 +23,18 @@
           <div class="content">
             <div class="user-comment">
               {{ event.json.msg }}
+              <div
+                class="pics"
+                style="display: flex; flex-wrap: wrap; justify-content: center"
+              >
+                <van-image
+                  v-for="pic in event.pics"
+                  :key="pic.originUrl"
+                  :src="pic.pcSquareUrl"
+                  width="90"
+                  height="90"
+                ></van-image>
+              </div>
             </div>
             <div class="music-sharing">
               <div class="music-poster">

@@ -286,6 +286,7 @@ export default {
         content: this.message,
       });
       this.message = "";
+      this.onRefresh();
     },
     cancel() {
       this.message = "";
@@ -315,12 +316,13 @@ export default {
       });
       if (data.code === 200) {
         Toast(data.message);
-        let { data: nData } = await getCommentListAPI({
-          mid: this.currentMoment,
-        });
-        if (nData.code === 200) {
-          this.comments = nData.result;
-        }
+        // let { data: nData } = await getCommentListAPI({
+        //   mid: this.currentMoment,
+        // });
+        // if (nData.code === 200) {
+        //   this.comments = nData.result;
+        // }
+        this.momentDetail(this.currentMoment);
       }
       this.message = "";
       console.log(data);
@@ -342,7 +344,9 @@ export default {
       });
       if (data.code === 200) {
         Toast(data.message);
+        this.momentDetail(this.currentMoment);
       }
+      this.message = "";
     },
     getReplyList(cid) {
       return this.replies.filter((reply) => reply.commentId === cid);

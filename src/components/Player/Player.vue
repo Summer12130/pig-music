@@ -356,6 +356,7 @@ export default {
       return `${minute}:${second}`;
     },
     getLyric() {
+      
       if (!this.music.lyric) {
         this.currentLyric = null;
         this.playingLyric = "";

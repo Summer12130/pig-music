@@ -30,9 +30,9 @@
             <van-tab title="动态">
               <user-moments></user-moments>
             </van-tab>
-            <van-tab title="播客">
+            <!-- <van-tab title="社区动态">
               <user-podcasting></user-podcasting>
-            </van-tab>
+            </van-tab> -->
           </van-tabs>
         </div>
         <div v-else>
@@ -98,11 +98,16 @@
                 center
                 clearable
                 label="短信验证码"
-                placeholder="请输入短信验证码"
+                placeholder="请输入验证码"
               >
                 <template #button>
-                  <van-button size="small" type="primary" @touchstart="sendSms"
-                    >发送验证码</van-button
+                  <van-button
+                    size="small"
+                    type="primary"
+                    @touchstart="sendSms"
+                    :disabled="!canClick"
+                    style="width: 1rem"
+                    >{{ getCodeText }}</van-button
                   >
                 </template>
               </van-field>
@@ -161,6 +166,9 @@ export default {
         { icon: "gem", text: "私人FM" },
         { icon: "gem", text: "播放记录" },
       ],
+      getCodeText: "获取验证码",
+      canClick: true, // 验证码是否禁用
+      totalTime: 60,
     };
   },
   computed: {
@@ -203,12 +211,13 @@ export default {
             avatarUrl: this.profile.avatarUrl,
             signature: this.profile.signature,
           });
+          console.log(result);
           setTimeout(() => {
             this.loading = false;
+            Toast("登陆成功");
           }, 1500);
+          this.toLogin = false;
         }
-        Toast("登陆成功");
-        this.toLogin = false;
       } else if (data.code === 502) {
         this.setUserInfo({});
         Toast(data.msg);
@@ -220,21 +229,47 @@ export default {
       }
     },
     async sendSms() {
+      if (!this.canClick) return;
+      this.canClick = false;
+      this.getCodeText = this.totalTime + "s后重新发送";
+      let clock = window.setInterval(() => {
+        this.totalTime--;
+        this.getCodeText = this.totalTime + "s后重新发送";
+        if (this.totalTime < 0) {
+          window.clearInterval(clock);
+          this.getCodeText = "重新发送验证码";
+          this.totalTime = 60;
+          this.canClick = true;
+        }
+      }, 1000);
       let { data } = await sentSMSAPI({ phone: this.phoneNumber });
-      console.log(data);
     },
     async onVerify() {
       this.loading = true;
-      let { data } = await verifySMSAPI({
+      // let { data } = await verifySMSAPI({
+      //   phone: this.phoneNumber,
+      //   captcha: this.sms,
+      // });
+      let { data } = await cellphoneLoginAPI({
         phone: this.phoneNumber,
         captcha: this.sms,
       });
-      if (data.data) {
-        let { data } = await loginStatusAPI();
-        if (data.data.profile) {
+      console.log(data);
+      if (data.token) {
+        let { data: uData } = await loginStatusAPI();
+
+        if (uData.data.profile) {
           this.setLoginStatus(true);
-          this.setUserInfo(data.data);
-          this.profile = data.data.profile;
+          this.setUserInfo(uData.data);
+          this.profile = uData.data.profile;
+          let result = await createUserAPI({
+            id: this.profile.userId,
+            nickname: this.profile.nickname,
+            phone: this.phoneNumber,
+            city: this.profile.city,
+            avatarUrl: this.profile.avatarUrl,
+            signature: this.profile.signature,
+          });
         }
         setTimeout(() => {
           this.loading = false;
@@ -264,6 +299,9 @@ export default {
       } else {
         this.setLoginStatus(false);
       }
+    } else {
+      this.profile = this.userInfo.profile;
+      this.setNavTitle(this.profile.nickname);
     }
   },
   activated() {
@@ -271,7 +309,6 @@ export default {
       this.profile = this.userInfo.profile;
       this.setNavTitle(this.profile.nickname);
     }
-    console.log(this.userInfo);
   },
 };
 </script>
